@@ -205,3 +205,70 @@ def test_health_is_unavailable_when_the_database_does_not_answer(parts):
 
     assert response.status_code == 503
     assert response.json()['reason'] == 'the database is not reachable'
+
+
+def test_a_subscription_and_its_handler_go_together():
+    with pytest.raises(ValueError):
+        ServiceApplication(name='X', routers=[], subscription=CoreRecipeSignalSubscription())
+
+    with pytest.raises(ValueError):
+        ServiceApplication(name='X', routers=[], handler=handler)
+
+
+def test_a_service_without_a_bus_gets_redis_and_the_index_route_only(parts):
+    application = ServiceApplication(name='Session', routers=[]).initialize()
+
+    with TestClient(application) as client:
+        assert client.get('/').json() == {}
+        assert client.get('/signal/health').status_code == 404
+        assert application.state.redis is parts.redis
+        assert application.state.token_verifier is parts.verifier
+        assert not hasattr(application.state, 'service_bus')
+
+    parts.redis.close.assert_awaited_once()
+    parts.connection.close.assert_not_awaited()
+    parts.subscriber.run.assert_not_awaited()
+
+
+def test_the_startup_hook_runs_once_the_shared_parts_are_open_and_the_shutdown_hook_before_they_close(parts):
+    order = []
+
+    async def startup(application):
+        order.append(('startup', application.state.redis, hasattr(application.state, 'signal_task')))
+
+    async def shutdown(application):
+        order.append(('shutdown', parts.redis.close.await_count, parts.stopped.is_set()))
+
+    with TestClient(build(startup=startup, shutdown=shutdown).initialize()):
+        pass
+
+    assert order == [('startup', parts.redis, True), ('shutdown', 0, True)]
+
+
+def test_the_hooks_work_without_a_bus_too(parts):
+    seen = []
+
+    async def startup(application):
+        application.state.thing = 'ready'
+        seen.append('startup')
+
+    async def shutdown(application):
+        seen.append(application.state.thing)
+
+    application = ServiceApplication(name='Session', routers=[], startup=startup, shutdown=shutdown).initialize()
+
+    with TestClient(application):
+        pass
+
+    assert seen == ['startup', 'ready']
+
+
+def test_a_shutdown_hook_that_fails_does_not_stop_the_rest(parts):
+    async def shutdown(application):
+        raise RuntimeError('boom')
+
+    with TestClient(build(shutdown=shutdown).initialize()):
+        pass
+
+    parts.connection.close.assert_awaited_once()
+    parts.redis.close.assert_awaited_once()
