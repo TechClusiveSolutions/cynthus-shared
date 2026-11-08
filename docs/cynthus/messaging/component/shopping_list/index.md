@@ -19,9 +19,9 @@ The names repeat the aggregate (`list`, `item`) as the other domains do, so the 
 | `public.shopping_list.item.updated` | `cynthus-shopping` | Lets other services know which fields of a list item changed. |
 | `public.shopping_list.item.checked_off` | `cynthus-shopping` | Lets other services know the requester bought the item in person; feeds the purchase history. |
 | `public.shopping_list.item.removed` | `cynthus-shopping` | Lets other services know an item left the list without being bought. |
-
 | `public.shopping_list.list.requested` | `cynthus-core-api` | Hands a request about lists or their items to the Shopping service so the caller gets an immediate acknowledgement. |
 | `public.shopping_list.list.responded` | `cynthus-shopping` | Carries the outcome back to `cynthus-core-api`, which relays it to the caller. |
+
 ---
 
 ## `public.shopping_list.list.created`
@@ -170,7 +170,7 @@ The names repeat the aggregate (`list`, `item`) as the other domains do, so the 
 | Field | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `schema_version` | `int` | No | `1` | Payload schema version. |
-| `operation` | `Literal[`create`, `get`, `list`, `update`, `delete`, `add_item`, `update_item`, `remove_item`, `check_off_item`]` | Yes | — | What to do with shopping lists or their items. |
+| `operation` | `Literal['create', 'get', 'list', 'update', 'delete', 'add_item', 'update_item', 'remove_item', 'check_off_item']` | Yes | — | What to do with shopping lists or their items. |
 | `resource_id` | `Optional[str]` | No | `None` | The list to get, change or delete, or the list an item belongs to. |
 | `item_id` | `Optional[str]` | No | `None` | The item to change, remove or check off. |
 | `filters` | `Dict[str, Any]` | No | `{}` | Narrows a list of lists, for example `q`, `owner`, `archived`, `limit` or `offset`. |
