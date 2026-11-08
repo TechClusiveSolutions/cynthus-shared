@@ -13,6 +13,7 @@ MEMBERS = [
     ('AUTHENTICATED', 'authenticated'),
     ('AUTO_RESOLVED', 'auto_resolved'),
     ('CAST', 'cast'),
+    ('CHECKED_OFF', 'checked_off'),
     ('COMPUTED', 'computed'),
     ('CREATED', 'created'),
     ('DELETED', 'deleted'),
