@@ -13,6 +13,8 @@ MEMBERS = [
     ('INVENTORY', 'inventory'),
     ('MEAL', 'meal'),
     ('PROFILE', 'profile'),
+    ('RECIPE', 'recipe'),
+    ('SHOPPING_LIST', 'shopping_list'),
 ]
 
 
