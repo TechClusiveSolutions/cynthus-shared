@@ -3,7 +3,9 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Request
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
 from cynthus.core import RedisClient, logging
 from cynthus.messaging.publisher import ServiceBusSignalPublisher
@@ -22,7 +24,8 @@ class ServiceApplication:
         The service supplies its name, its routers, the subscription it listens on and a handler. This class does the
         rest: it opens the Redis client and the one Service Bus connection, turns every access decision into an audit
         signal, runs the subscriber for the life of the application, and closes everything on shutdown. It adds the
-        index route and ``/signal/health``.
+        index route and ``/signal/health``,
+        which answers 503 while the subscriber is not running or the database does not answer.
 
         ``handler(signal, publisher)`` is called with each `ReceivedSignal` and the `ServiceBusSignalPublisher` that
         shares the service's connection. A handler that raises sends its signal to the dead-letter queue.
@@ -55,16 +58,36 @@ class ServiceApplication:
     def _system_router(self) -> APIRouter:
         router = APIRouter()
         subscription = self._subscription
+        database = self._database
 
         @router.get('/')
         async def get_index():
             return {}
 
         @router.get('/signal/health')
-        async def get_signal_health():
-            """Lightweight readiness probe for the signal subscriber."""
+        async def get_signal_health(request: Request):
+            """Ready only while the signal subscriber is running and the database answers; otherwise 503 with the reason."""
 
-            return {'subscription': subscription.name, 'topic': subscription.topic.name}
+            health = {'subscription': subscription.name, 'topic': subscription.topic.name}
+            task = getattr(request.app.state, 'signal_task', None)
+
+            if task is None or task.done():
+                return JSONResponse(
+                    {**health, 'status': 'unavailable', 'reason': 'the signal subscriber is not running'}, 503
+                )
+
+            if database is not None:
+                try:
+                    async with database.session() as session:
+                        await session.execute(text('SELECT 1'))
+                except Exception:
+                    LOGGER.getChild('get_signal_health').exception('The database did not answer')
+
+                    return JSONResponse(
+                        {**health, 'status': 'unavailable', 'reason': 'the database is not reachable'}, 503
+                    )
+
+            return {**health, 'status': 'ok'}
 
         return router
 
