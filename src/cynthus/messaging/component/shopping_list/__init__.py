@@ -5,6 +5,8 @@ from .message import (
     ShoppingListItemCheckedOffMessage,
     ShoppingListItemRemovedMessage,
     ShoppingListItemUpdatedMessage,
+    ShoppingListRequestedMessage,
+    ShoppingListRespondedMessage,
     ShoppingListUpdatedMessage,
 )
 from .payload import (
@@ -14,5 +16,7 @@ from .payload import (
     ShoppingListItemCheckedOffPayload,
     ShoppingListItemRemovedPayload,
     ShoppingListItemUpdatedPayload,
+    ShoppingListRequestedPayload,
+    ShoppingListRespondedPayload,
     ShoppingListUpdatedPayload,
 )

@@ -2,6 +2,8 @@
 
 The `shopping_list` domain covers shopping lists and the items on them. A list is a standing notebook of what a person or business wants; the items are the request. The requester can also check an item off after buying it in person. Orders placed with a store or marketplace, substitutions and the order planner come in a later phase and will add their own signals. All are `public.*` and are published to `cynthus-events-topic`.
 
+A caller asks for list work with a request signal and gets the answer back as a response signal, so it is acknowledged at once; a change is then followed by the facts below. Item work is part of the list aggregate, so it uses the same pair.
+
 The names repeat the aggregate (`list`, `item`) as the other domains do, so the signal for a new list is `public.shopping_list.list.created`.
 
 ---
@@ -17,6 +19,8 @@ The names repeat the aggregate (`list`, `item`) as the other domains do, so the 
 | `public.shopping_list.item.updated` | `cynthus-shopping` | Lets other services know which fields of a list item changed. |
 | `public.shopping_list.item.checked_off` | `cynthus-shopping` | Lets other services know the requester bought the item in person; feeds the purchase history. |
 | `public.shopping_list.item.removed` | `cynthus-shopping` | Lets other services know an item left the list without being bought. |
+| `public.shopping_list.list.requested` | `cynthus-core-api` | Hands a request about lists or their items to the Shopping service so the caller gets an immediate acknowledgement. |
+| `public.shopping_list.list.responded` | `cynthus-shopping` | Carries the outcome back to `cynthus-core-api`, which relays it to the caller. |
 
 ---
 
@@ -151,3 +155,44 @@ The names repeat the aggregate (`list`, `item`) as the other domains do, so the 
 | `schema_version` | `int` | No | `1` | Payload schema version. |
 | `list_id` | `str` | Yes | — | The identifier of the shopping list. |
 | `item_id` | `str` | Yes | — | The identifier of the list item. |
+
+---
+
+## `public.shopping_list.list.requested`
+
+**Signal class:** `PublicShoppingListListRequestedSignal`
+**Message class:** `ShoppingListRequestedMessage`
+**Payload class:** `ShoppingListRequestedPayload`
+
+**Emitted by:** `cynthus-core-api`
+**Consumed by:** `cynthus-shopping`
+
+| Field | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `schema_version` | `int` | No | `1` | Payload schema version. |
+| `operation` | `Literal['create', 'get', 'list', 'update', 'delete', 'add_item', 'update_item', 'remove_item', 'check_off_item']` | Yes | — | What to do with shopping lists or their items. |
+| `resource_id` | `Optional[str]` | No | `None` | The list to get, change or delete, or the list an item belongs to. |
+| `item_id` | `Optional[str]` | No | `None` | The item to change, remove or check off. |
+| `filters` | `Dict[str, Any]` | No | `{}` | Narrows a list of lists, for example `q`, `owner`, `archived`, `limit` or `offset`. |
+| `data` | `Dict[str, Any]` | No | `{}` | The fields to create or change a list or an item with. |
+
+`get` and `list` need `shopping:read`; every other operation needs `shopping:write`.
+
+---
+
+## `public.shopping_list.list.responded`
+
+**Signal class:** `PublicShoppingListListRespondedSignal`
+**Message class:** `ShoppingListRespondedMessage`
+**Payload class:** `ShoppingListRespondedPayload`
+
+**Emitted by:** `cynthus-shopping`
+**Consumed by:** `cynthus-core-api`
+
+| Field | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `schema_version` | `int` | No | `1` | Payload schema version. |
+| `operation` | `str` | Yes | — | The operation that was requested. |
+| `status` | `int` | Yes | — | `200`, `201` or `204` when it worked; `401`, `403`, `404`, `405`, `409`, `422` or `503` when it did not. |
+| `result` | `Optional[Any]` | No | `None` | The list, or the lists, when it worked. |
+| `error` | `Optional[str]` | No | `None` | Why the request failed. |

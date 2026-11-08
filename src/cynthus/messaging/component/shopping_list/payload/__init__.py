@@ -4,4 +4,6 @@ from .shopping_list_item_added import ShoppingListItemAddedPayload
 from .shopping_list_item_checked_off import ShoppingListItemCheckedOffPayload
 from .shopping_list_item_removed import ShoppingListItemRemovedPayload
 from .shopping_list_item_updated import ShoppingListItemUpdatedPayload
+from .shopping_list_requested import ShoppingListRequestedPayload
+from .shopping_list_responded import ShoppingListRespondedPayload
 from .shopping_list_updated import ShoppingListUpdatedPayload
