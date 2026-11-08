@@ -12,6 +12,7 @@ class SignalActionType(str, Enum):
     AUTHENTICATED: str = 'authenticated'
     AUTO_RESOLVED: str = 'auto_resolved'
     CAST: str = 'cast'
+    CHECKED_OFF: str = 'checked_off'
     COMPUTED: str = 'computed'
     CREATED: str = 'created'
     DELETED: str = 'deleted'

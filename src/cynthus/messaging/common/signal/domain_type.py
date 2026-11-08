@@ -13,3 +13,4 @@ class SignalDomainType(str, Enum):
     MEAL: str = 'meal'
     PROFILE: str = 'profile'
     RECIPE: str = 'recipe'
+    SHOPPING_LIST: str = 'shopping_list'
