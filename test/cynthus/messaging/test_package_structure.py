@@ -170,7 +170,7 @@ MODULES = [
     'cynthus.messaging.subscription.core_notification_signal_subscription',
     'cynthus.messaging.subscription.core_profile_signal_subscription',
     'cynthus.messaging.subscription.core_recipe_signal_subscription',
-    'cynthus.messaging.subscription.core_scheduler_signal_subscription',
+    'cynthus.messaging.subscription.scheduler_signal_subscription',
     'cynthus.messaging.subscription.core_shopping_signal_subscription',
     'cynthus.messaging.subscription.core_web_signal_subscription',
     'cynthus.messaging.subscription.core_worker_signal_subscription',
