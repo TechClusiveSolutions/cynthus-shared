@@ -24,6 +24,7 @@ MEMBERS = [
     ('MESSAGE_GENERATED', 'message_generated'),
     ('MESSAGE_REQUESTED', 'message_requested'),
     ('PUBLISHED', 'published'),
+    ('REGISTERED', 'registered'),
     ('REJECTED', 'rejected'),
     ('REMOVED', 'removed'),
     ('REQUESTED', 'requested'),
@@ -32,6 +33,7 @@ MEMBERS = [
     ('SESSION_ENDED', 'session_ended'),
     ('SESSION_STARTED', 'session_started'),
     ('UPDATED', 'updated'),
+    ('VERIFIED', 'verified'),
 ]
 
 

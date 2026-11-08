@@ -23,6 +23,7 @@ class SignalActionType(str, Enum):
     MESSAGE_GENERATED: str = 'message_generated'
     MESSAGE_REQUESTED: str = 'message_requested'
     PUBLISHED: str = 'published'
+    REGISTERED: str = 'registered'
     REJECTED: str = 'rejected'
     REMOVED: str = 'removed'
     REQUESTED: str = 'requested'
@@ -31,3 +32,4 @@ class SignalActionType(str, Enum):
     SESSION_ENDED: str = 'session_ended'
     SESSION_STARTED: str = 'session_started'
     UPDATED: str = 'updated'
+    VERIFIED: str = 'verified'
