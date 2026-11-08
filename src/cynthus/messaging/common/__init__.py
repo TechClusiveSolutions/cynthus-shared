@@ -66,6 +66,8 @@ from .signal import (
     PublicShoppingListItemUpdatedSignal,
     PublicShoppingListListCreatedSignal,
     PublicShoppingListListDeletedSignal,
+    PublicShoppingListListRequestedSignal,
+    PublicShoppingListListRespondedSignal,
     PublicShoppingListListUpdatedSignal,
     SignalActionType,
     SignalDomainType,
