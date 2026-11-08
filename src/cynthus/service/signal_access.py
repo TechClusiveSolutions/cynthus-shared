@@ -11,7 +11,8 @@ AUTHORIZATION = 'authorization'
 
 
 class SignalAccess:
-    """The API forwards the caller's access token as the `authorization` message property.
+    """The API forwards the caller's access token as the `authorization` message property (read from a Service Bus
+    message or from a `ReceivedSignal`).
 
     A signal is answered only when that token is genuine, grants the permission, and names the same organization,
     workspace and actor as the signal itself, so a signal cannot be forged or replayed for another tenant.
@@ -74,8 +75,9 @@ class SignalAccess:
 
     @staticmethod
     def _header(message) -> str | bytes | None:
-        # The Service Bus SDK hands properties back with bytes keys; accept either form
-        properties = getattr(message, 'application_properties', None) or {}
+        # A raw Service Bus message keeps its properties in `application_properties`, with bytes keys; a
+        # `ReceivedSignal` keeps them in `properties`, as text. Accept either.
+        properties = getattr(message, 'application_properties', None) or getattr(message, 'properties', None) or {}
 
         for key, value in properties.items():
             name = key.decode('utf-8', errors='replace') if isinstance(key, bytes) else key

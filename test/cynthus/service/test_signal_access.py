@@ -185,3 +185,25 @@ async def test_a_recorder_that_fails_never_changes_the_decision():
     access = SignalAccess(TokenVerifier('http://auth.test/jwks', key_client=Keys()), Broken())
 
     assert (await access.authorize(message(identity), signal(identity), 'inventory:read')).subject == identity['subject']
+
+
+@pytest.mark.asyncio
+async def test_a_received_signal_carries_the_token_in_its_properties():
+    from cynthus.messaging.subscriber import ReceivedSignal
+
+    identity = who()
+    raw = message(identity)
+    received = ReceivedSignal(event_type='public.inventory.item.requested', body='{}',
+                              properties=dict(raw.application_properties))
+
+    claims = await access().authorize(received, signal(identity), 'inventory:read')
+
+    assert claims.subject == identity['subject']
+
+
+@pytest.mark.asyncio
+async def test_a_received_signal_without_a_token_is_refused():
+    from cynthus.messaging.subscriber import ReceivedSignal
+
+    with pytest.raises(TokenError, match='missing'):
+        await access().authorize(ReceivedSignal(event_type='a.b.c', body='{}'), signal(who()), 'inventory:read')
