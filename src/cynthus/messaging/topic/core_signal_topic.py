@@ -1,9 +1,9 @@
 """Core Signal Topic class for the Cynthus project"""
 
-from pydantic import BaseModel
+from .signal_topic import SignalTopic
 
 
-class CoreSignalTopic(BaseModel):
+class CoreSignalTopic(SignalTopic):
     """
         Represents the cynthus-events-topic Azure Service Bus topic
 
