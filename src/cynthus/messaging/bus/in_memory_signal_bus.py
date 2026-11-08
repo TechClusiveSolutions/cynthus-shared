@@ -1,9 +1,11 @@
 """In-memory Signal Bus class for the Cynthus project"""
 
+import asyncio
 import logging
 
 from ..common.signal.message_base import SignalMessageBase
 from ..publisher.signal_publisher import SignalPublisher
+from ..subscriber.received_signal import ReceivedSignal
 from ..subscriber.signal_handler import SignalHandler
 from ..subscriber.signal_subscriber import SignalSubscriber
 from ..topic.core_signal_topic import CoreSignalTopic
@@ -17,7 +19,7 @@ class InMemorySignalBus(SignalPublisher, SignalSubscriber):
     """
         A broker-free publisher and subscriber for unit tests and local runs
 
-        Publishing records the signal and delivers its JSON body to every handler subscribed to the topic. A handler that
+        Publishing records the signal and delivers it as a `ReceivedSignal` to every handler subscribed to the topic. A handler that
         raises does not stop the others and does not fail the publisher, mirroring a real bus where consumers fail
         independently; the error is kept in ``failures``.
     """
@@ -35,14 +37,24 @@ class InMemorySignalBus(SignalPublisher, SignalSubscriber):
     ) -> None:
         topic = topic or CoreSignalTopic()
         self.published.append(PublishedSignal(topic_name=topic.name, message=message, access_token=access_token))
-        body = message.model_dump(mode='json')
+        signal = ReceivedSignal(
+            event_type=message.event_type,
+            body=message.model_dump_json(),
+            correlation_id=str(message.correlation_id),
+            properties={'authorization': f'Bearer {access_token}'} if access_token else {},
+        )
 
         for subscription, handler in list(self._handlers.get(topic.name, [])):
             try:
-                await handler(body)
+                await handler(signal)
             except Exception as error:
                 LOGGER.exception('Handler for subscription %s failed (correlation_id=%s)', subscription, message.correlation_id)
                 self.failures.append((subscription, error))
+
+    async def run(self) -> None:
+        """Delivery happens when a signal is published, so there is nothing to read: wait until cancelled."""
+
+        await asyncio.Event().wait()
 
     def published_to(self, topic: SignalTopic) -> list[SignalMessageBase]:
         """The messages published to ``topic``, oldest first."""

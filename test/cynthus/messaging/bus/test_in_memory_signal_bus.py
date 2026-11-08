@@ -23,8 +23,8 @@ def make_message(event_type='public.test.thing.created'):
 
 
 def recorder(sink, name=None):
-    async def handler(body):
-        sink.append(name if name else body)
+    async def handler(signal):
+        sink.append(name if name else signal.payload)
 
     return handler
 
@@ -124,3 +124,33 @@ async def test_publishes_to_the_core_topic_when_no_topic_is_given_and_keeps_the_
 
     assert bus.published_to(CoreSignalTopic()) == [message]
     assert bus.published[0].access_token == 'abc.def.ghi'
+
+
+@pytest.mark.asyncio
+async def test_handlers_see_the_event_type_and_the_authorization_property_but_not_a_token_in_the_body():
+    bus, received = InMemorySignalBus(), []
+
+    async def handler(signal):
+        received.append(signal)
+
+    bus.subscribe(CoreSignalTopic(), 'sub', handler)
+    await bus.publish(make_message(), 'abc.def.ghi')
+
+    assert received[0].event_type == 'public.test.thing.created'
+    assert received[0].access_token == 'abc.def.ghi'
+    assert 'abc.def.ghi' not in received[0].body
+
+
+@pytest.mark.asyncio
+async def test_run_waits_until_it_is_cancelled():
+    import asyncio
+
+    task = asyncio.create_task(InMemorySignalBus().run())
+    await asyncio.sleep(0)
+
+    assert not task.done()
+
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
