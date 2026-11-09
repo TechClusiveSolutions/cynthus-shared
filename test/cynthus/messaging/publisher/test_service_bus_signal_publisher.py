@@ -2,8 +2,10 @@ import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from azure.core.exceptions import ServiceRequestError
+from azure.servicebus.exceptions import ServiceBusConnectionError
 
-from cynthus.messaging.publisher import ServiceBusSignalPublisher, SignalPublisher
+from cynthus.messaging.publisher import ServiceBusSignalPublisher, SignalBusUnavailable, SignalPublisher
 from cynthus.messaging.publisher import service_bus_signal_publisher as publisher_module
 from cynthus.messaging.topic import CoreSignalTopic, SignalTopic
 
@@ -336,3 +338,41 @@ async def test_the_core_topic_may_be_named_but_another_topic_is_refused():
         await publisher.publish(_message(), topic=SignalTopic(name='other'))
 
     assert len(sent) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('error', [
+    ServiceBusConnectionError(message='ConnectionsQuotaExceeded for namespace secret-namespace'),
+    ServiceRequestError('cannot reach the namespace'),
+    ConnectionRefusedError('refused'),
+    TimeoutError('timed out'),
+])
+async def test_a_bus_that_cannot_be_reached_is_signal_bus_unavailable(error, caplog):
+    client, _ = _client()
+    client.get_topic_sender.return_value.send_messages = AsyncMock(side_effect=error)
+
+    with pytest.raises(SignalBusUnavailable) as raised:
+        await ServiceBusSignalPublisher(client).publish(_message())
+
+    assert raised.value.__cause__ is error
+    assert 'secret-namespace' not in str(raised.value)
+    assert 'secret-namespace' not in caplog.text
+    assert client.get_topic_sender.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_a_sender_that_cannot_be_opened_is_signal_bus_unavailable():
+    client, _ = _client()
+    client.get_topic_sender.return_value.__aenter__ = AsyncMock(side_effect=ServiceBusConnectionError(message='down'))
+
+    with pytest.raises(SignalBusUnavailable):
+        await ServiceBusSignalPublisher(client).publish(_message())
+
+
+@pytest.mark.asyncio
+async def test_other_errors_are_not_mistaken_for_an_unavailable_bus():
+    client, _ = _client()
+    client.get_topic_sender.return_value.send_messages = AsyncMock(side_effect=ValueError('bad message'))
+
+    with pytest.raises(ValueError):
+        await ServiceBusSignalPublisher(client).publish(_message())

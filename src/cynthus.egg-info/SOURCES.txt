@@ -292,6 +292,8 @@ src/cynthus/messaging/publisher/__init__.py
 src/cynthus/messaging/publisher/service_bus_signal_publisher.py
 src/cynthus/messaging/publisher/signal_publisher.py
 src/cynthus/messaging/subscriber/__init__.py
+src/cynthus/messaging/subscriber/received_signal.py
+src/cynthus/messaging/subscriber/service_bus_signal_subscriber.py
 src/cynthus/messaging/subscriber/signal_handler.py
 src/cynthus/messaging/subscriber/signal_subscriber.py
 src/cynthus/messaging/subscription/__init__.py
@@ -306,7 +308,6 @@ src/cynthus/messaging/subscription/core_logistics_signal_subscription.py
 src/cynthus/messaging/subscription/core_notification_signal_subscription.py
 src/cynthus/messaging/subscription/core_profile_signal_subscription.py
 src/cynthus/messaging/subscription/core_recipe_signal_subscription.py
-src/cynthus/messaging/subscription/core_scheduler_signal_subscription.py
 src/cynthus/messaging/subscription/core_shopping_signal_subscription.py
 src/cynthus/messaging/subscription/core_web_signal_subscription.py
 src/cynthus/messaging/subscription/core_worker_signal_subscription.py
@@ -319,6 +320,7 @@ src/cynthus/messaging/subscription/profile_public_subscription.py
 src/cynthus/messaging/subscription/public_subscription.py
 src/cynthus/messaging/subscription/recipe_public_subscription.py
 src/cynthus/messaging/subscription/scheduler_public_subscription.py
+src/cynthus/messaging/subscription/scheduler_signal_subscription.py
 src/cynthus/messaging/subscription/shopping_public_subscription.py
 src/cynthus/messaging/test/__init__.py
 src/cynthus/messaging/test/factory/__init__.py
@@ -363,5 +365,7 @@ src/cynthus/service/facts.py
 src/cynthus/service/forbidden.py
 src/cynthus/service/identifier.py
 src/cynthus/service/outcome.py
+src/cynthus/service/service_application.py
+src/cynthus/service/service_bus_connection.py
 src/cynthus/service/signal_access.py
 src/cynthus/service/signal_consumer.py
