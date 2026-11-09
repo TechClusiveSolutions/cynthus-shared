@@ -272,3 +272,20 @@ def test_a_shutdown_hook_that_fails_does_not_stop_the_rest(parts):
 
     parts.connection.close.assert_awaited_once()
     parts.redis.close.assert_awaited_once()
+
+
+def test_a_request_that_fails_because_the_bus_is_down_is_answered_with_503(parts):
+    from cynthus.messaging.publisher import SignalBusUnavailable
+
+    router = APIRouter()
+
+    @router.get('/needs-the-bus')
+    async def needs_the_bus():
+        raise SignalBusUnavailable('down')
+
+    with TestClient(build(routers=[router]).initialize()) as client:
+        response = client.get('/needs-the-bus')
+
+    assert response.status_code == 503
+    assert response.json()['code'] == 'service_unavailable'
+    assert response.headers['retry-after']

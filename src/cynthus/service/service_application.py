@@ -8,11 +8,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from cynthus.core import RedisClient, logging
-from cynthus.messaging.publisher import ServiceBusSignalPublisher
+from cynthus.messaging.publisher import ServiceBusSignalPublisher, SignalBusUnavailable
 from cynthus.messaging.subscriber import ServiceBusSignalSubscriber
 from cynthus.security import SignalAccessRecorder, TokenVerifier
 
 from .service_bus_connection import ServiceBusConnection
+from .signal_bus_unavailable_handler import signal_bus_unavailable_handler
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +30,8 @@ class ServiceApplication:
 
         ``handler(signal, publisher)`` is called with each `ReceivedSignal` and the `ServiceBusSignalPublisher` that
         shares the service's connection. A handler that raises sends its signal to the dead-letter queue.
+
+        A request that fails because the bus is down (`SignalBusUnavailable`) is answered with 503 and `Retry-After`.
 
         A service that has no bus (for example the Session gateway) leaves out ``subscription`` and ``handler``: it
         then gets the Redis client, the token verifier and the index route, and no Service Bus connection.
@@ -60,6 +63,7 @@ class ServiceApplication:
         logger.info('Starting the %s application...', self.name)
 
         application = FastAPI(lifespan=self._lifespan)
+        application.add_exception_handler(SignalBusUnavailable, signal_bus_unavailable_handler)
 
         for router in self._routers:
             application.include_router(router)
