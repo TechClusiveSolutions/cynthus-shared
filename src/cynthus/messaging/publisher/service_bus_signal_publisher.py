@@ -3,18 +3,24 @@
 import asyncio
 from os import environ
 
+from azure.core.exceptions import ServiceRequestError
 from azure.identity.aio import DefaultAzureCredential
 from azure.servicebus import ServiceBusMessage
 from azure.servicebus.aio import ServiceBusClient
+from azure.servicebus.exceptions import ServiceBusError
 
 from cynthus.core import logging
 from cynthus.messaging.topic import CoreSignalTopic, SignalTopic
 
+from .signal_bus_unavailable import SignalBusUnavailable
 from .signal_publisher import SignalPublisher
 
 LOGGER = logging.getLogger(__name__)
 
 AUTHORIZATION = 'authorization'
+
+# What it looks like when the bus cannot be reached or refuses the connection (including its connection quota)
+BUS_ERRORS = (ServiceBusError, ServiceRequestError, OSError, TimeoutError)
 CLIENT_ATTRIBUTE = '_cynthus_signal_publisher'
 
 
@@ -83,21 +89,30 @@ class ServiceBusSignalPublisher(SignalPublisher):
 
         # A sender is not safe for concurrent sends: overlapping sends make one fail and shut the sender down for the
         # others, and each failure would then open (and orphan) another connection. One message at a time.
-        async with self._send_lock():
-            sender = None
+        try:
+            async with self._send_lock():
+                sender = None
 
-            try:
-                sender = await self._open()
-                await sender.send_messages(build())
-            except Exception:
-                # The link may have been dropped since the last message: start again on a fresh sender, once
-                LOGGER.getChild('publish').warning(
-                    'Sending %s failed; retrying on a new sender', signal_message.event_type
-                )
+                try:
+                    sender = await self._open()
+                    await sender.send_messages(build())
+                except Exception:
+                    # The link may have been dropped since the last message: start again on a fresh sender, once
+                    LOGGER.getChild('publish').warning(
+                        'Sending %s failed; retrying on a new sender', signal_message.event_type
+                    )
 
-                await self._discard(sender)
+                    await self._discard(sender)
 
-                await (await self._open()).send_messages(build())
+                    await (await self._open()).send_messages(build())
+        except BUS_ERRORS as error:
+            # Only the type and the correlation id are logged: the body is never logged, and the error can name the namespace
+            LOGGER.getChild('publish').warning(
+                'The signal bus did not accept %s (correlation id %s)', signal_message.event_type,
+                signal_message.correlation_id,
+            )
+
+            raise SignalBusUnavailable(f'The signal bus did not accept {signal_message.event_type}') from error
 
     async def close(self) -> None:
         await self._discard(self._sender)
