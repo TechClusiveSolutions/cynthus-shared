@@ -13,6 +13,7 @@ from cynthus.messaging.subscriber import ServiceBusSignalSubscriber
 from cynthus.security import SignalAccessRecorder, TokenVerifier
 
 from .service_bus_connection import ServiceBusConnection
+from .service_outage import ServiceOutage
 from .signal_bus_unavailable_handler import signal_bus_unavailable_handler
 
 LOGGER = logging.getLogger(__name__)
@@ -31,7 +32,8 @@ class ServiceApplication:
         ``handler(signal, publisher)`` is called with each `ReceivedSignal` and the `ServiceBusSignalPublisher` that
         shares the service's connection. A handler that raises sends its signal to the dead-letter queue.
 
-        A request that fails because the bus is down (`SignalBusUnavailable`) is answered with 503 and `Retry-After`.
+        A request that fails because the bus is down (`SignalBusUnavailable`) is answered with 503 and `Retry-After`,
+        and the service records the outage in Redis (`ServiceOutage`) while it lasts.
 
         A service that has no bus (for example the Session gateway) leaves out ``subscription`` and ``handler``: it
         then gets the Redis client, the token verifier and the index route, and no Service Bus connection.
@@ -141,6 +143,10 @@ class ServiceApplication:
                 self._signal_access.recorder = recorder
 
             application.state.access_recorder = recorder
+
+            # When the bus cannot be reached, say so in Redis for the Session service (and so the web and the mobile app)
+            application.state.outage = ServiceOutage(redis)
+            publisher.on_unavailable = application.state.outage.report
             application.state.service_bus = connection.client
             application.state.signal_publisher = publisher
 

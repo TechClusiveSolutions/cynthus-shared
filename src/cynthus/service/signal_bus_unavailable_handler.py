@@ -11,7 +11,7 @@ CODE = 'service_unavailable'
 """The `code` of the answer: a browser app tells an outage from any other 503 by it."""
 
 
-async def signal_bus_unavailable_handler(request: Request, error: SignalBusUnavailable) -> JSONResponse:
+def unavailable_response() -> JSONResponse:
     """503 with the single error envelope from the engineering standards, a `code`, and `Retry-After`.
 
     The text is fixed: the error behind it can name the broker's namespace, which a caller must not see.
@@ -22,3 +22,9 @@ async def signal_bus_unavailable_handler(request: Request, error: SignalBusUnava
         status_code=503,
         headers={'Retry-After': str(RETRY_AFTER_SECONDS)},
     )
+
+
+async def signal_bus_unavailable_handler(request: Request, error: SignalBusUnavailable) -> JSONResponse:
+    """Answers a request that failed because the signal bus is down."""
+
+    return unavailable_response()

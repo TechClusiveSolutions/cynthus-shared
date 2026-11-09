@@ -1,6 +1,7 @@
 """Service Bus signal publisher for the Cynthus project"""
 
 import asyncio
+import time
 from os import environ
 
 from azure.core.exceptions import ServiceRequestError
@@ -21,6 +22,12 @@ AUTHORIZATION = 'authorization'
 
 # What it looks like when the bus cannot be reached or refuses the connection (including its connection quota)
 BUS_ERRORS = (ServiceBusError, ServiceRequestError, OSError, TimeoutError)
+
+# The Azure SDK waits through long connect-and-retry delays before it gives up, which would leave a request (a sign-in,
+# for one) hanging for minutes while the bus is down. Each attempt gets this long, and after a failure the publisher
+# refuses at once for the cool-down, so the next callers learn of the outage immediately.
+SEND_TIMEOUT_SECONDS = 5
+COOLDOWN_SECONDS = 15
 CLIENT_ATTRIBUTE = '_cynthus_signal_publisher'
 
 
@@ -38,6 +45,9 @@ class ServiceBusSignalPublisher(SignalPublisher):
         self._sender = None
         self._opening = None
         self._sending = None
+        # Told, with no arguments, when the bus turns out to be unreachable: a service uses it to report the outage
+        self.on_unavailable = None
+        self._down_until = 0.0
 
     @classmethod
     def for_client(cls, client: ServiceBusClient) -> 'ServiceBusSignalPublisher':
@@ -91,20 +101,25 @@ class ServiceBusSignalPublisher(SignalPublisher):
         # others, and each failure would then open (and orphan) another connection. One message at a time.
         try:
             async with self._send_lock():
-                sender = None
+                # Callers that queued behind a failing send must not each wait out their own attempts
+                if time.monotonic() < self._down_until:
+                    raise SignalBusUnavailable(f'The signal bus did not accept {signal_message.event_type} a moment ago')
 
-                try:
-                    sender = await self._open()
-                    await sender.send_messages(build())
-                except Exception:
-                    # The link may have been dropped since the last message: start again on a fresh sender, once
-                    LOGGER.getChild('publish').warning(
-                        'Sending %s failed; retrying on a new sender', signal_message.event_type
-                    )
+                for attempt in (1, 2):
+                    try:
+                        await asyncio.wait_for(self._send(build), SEND_TIMEOUT_SECONDS)
 
-                    await self._discard(sender)
+                        return
+                    except Exception:
+                        if attempt == 2:
+                            raise
 
-                    await (await self._open()).send_messages(build())
+                        # The link may have been dropped since the last message: start again on a fresh sender, once
+                        LOGGER.getChild('publish').warning(
+                            'Sending %s failed; retrying on a new sender', signal_message.event_type
+                        )
+
+                        await self._discard(self._sender)
         except BUS_ERRORS as error:
             # Only the type and the correlation id are logged: the body is never logged, and the error can name the namespace
             LOGGER.getChild('publish').warning(
@@ -112,7 +127,24 @@ class ServiceBusSignalPublisher(SignalPublisher):
                 signal_message.correlation_id,
             )
 
+            self._down_until = time.monotonic() + COOLDOWN_SECONDS
+
+            await self._report_unavailable()
+
             raise SignalBusUnavailable(f'The signal bus did not accept {signal_message.event_type}') from error
+
+    async def _send(self, build) -> None:
+        sender = await self._open()
+        await sender.send_messages(build())
+
+    async def _report_unavailable(self) -> None:
+        if self.on_unavailable is None:
+            return
+
+        try:
+            await self.on_unavailable()
+        except Exception:
+            LOGGER.getChild('_report_unavailable').exception('Could not report that the signal bus is unavailable')
 
     async def close(self) -> None:
         await self._discard(self._sender)

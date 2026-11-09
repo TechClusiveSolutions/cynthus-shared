@@ -32,3 +32,13 @@ def test_the_text_of_the_error_behind_it_is_never_shown():
     response = _client().get('/')
 
     assert 'secret-namespace' not in response.text
+
+
+def test_the_same_answer_can_be_built_by_a_service_that_has_no_exception_to_raise():
+    from cynthus.service import unavailable_response
+
+    response = unavailable_response()
+
+    assert response.status_code == 503
+    assert response.headers['retry-after'] == str(RETRY_AFTER_SECONDS)
+    assert b'service_unavailable' in response.body
