@@ -10,4 +10,5 @@ from .outcome import Outcome
 from .service_application import ServiceApplication
 from .service_bus_connection import ServiceBusConnection
 from .signal_access import SignalAccess
+from .signal_bus_unavailable_handler import signal_bus_unavailable_handler
 from .signal_consumer import SignalConsumer
