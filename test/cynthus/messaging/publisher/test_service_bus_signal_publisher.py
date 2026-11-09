@@ -1,4 +1,5 @@
 import asyncio
+import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -376,3 +377,111 @@ async def test_other_errors_are_not_mistaken_for_an_unavailable_bus():
 
     with pytest.raises(ValueError):
         await ServiceBusSignalPublisher(client).publish(_message())
+
+
+@pytest.mark.asyncio
+async def test_a_send_that_hangs_gives_up_after_the_time_limit(monkeypatch):
+    monkeypatch.setattr(publisher_module, 'SEND_TIMEOUT_SECONDS', 0.05)
+    client, _ = _client()
+    never = asyncio.Event()
+
+    async def hang(message):
+        await never.wait()
+
+    client.get_topic_sender.return_value.send_messages = hang
+
+    with pytest.raises(SignalBusUnavailable):
+        await asyncio.wait_for(ServiceBusSignalPublisher(client).publish(_message()), 2)
+
+    assert client.get_topic_sender.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_after_a_failure_the_publisher_refuses_at_once_for_the_cooldown(monkeypatch):
+    client, _ = _client()
+    client.get_topic_sender.return_value.send_messages = AsyncMock(side_effect=ServiceBusConnectionError(message='down'))
+    publisher = ServiceBusSignalPublisher(client)
+
+    with pytest.raises(SignalBusUnavailable):
+        await publisher.publish(_message())
+
+    calls = client.get_topic_sender.call_count
+
+    with pytest.raises(SignalBusUnavailable):
+        await publisher.publish(_message())
+
+    assert client.get_topic_sender.call_count == calls
+
+
+@pytest.mark.asyncio
+async def test_callers_queued_behind_a_failing_send_do_not_each_try_again():
+    client, _ = _client()
+    client.get_topic_sender.return_value.send_messages = AsyncMock(side_effect=ServiceBusConnectionError(message='down'))
+    publisher = ServiceBusSignalPublisher(client)
+
+    results = await asyncio.gather(*(publisher.publish(_message()) for _ in range(5)), return_exceptions=True)
+
+    assert all(isinstance(result, SignalBusUnavailable) for result in results)
+    assert client.get_topic_sender.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_the_publisher_tries_the_bus_again_once_the_cooldown_has_passed(monkeypatch):
+    client, sent = _client()
+    send = client.get_topic_sender.return_value.send_messages
+    publisher = ServiceBusSignalPublisher(client)
+    publisher._down_until = time.monotonic() + 1000
+
+    with pytest.raises(SignalBusUnavailable):
+        await publisher.publish(_message())
+
+    assert sent == []
+
+    publisher._down_until = time.monotonic() - 1
+    await publisher.publish(_message())
+
+    assert len(sent) == 1
+    send.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_an_unreachable_bus_is_reported_and_a_failing_report_changes_nothing():
+    client, _ = _client()
+    client.get_topic_sender.return_value.send_messages = AsyncMock(side_effect=ServiceBusConnectionError(message='down'))
+    reported = []
+
+    async def report():
+        reported.append(True)
+
+    publisher = ServiceBusSignalPublisher(client)
+    publisher.on_unavailable = report
+
+    with pytest.raises(SignalBusUnavailable):
+        await publisher.publish(_message())
+
+    assert reported == [True]
+
+    async def broken():
+        raise RuntimeError('redis is down')
+
+    other = ServiceBusSignalPublisher(client)
+    other.on_unavailable = broken
+
+    with pytest.raises(SignalBusUnavailable):
+        await other.publish(_message())
+
+
+@pytest.mark.asyncio
+async def test_nothing_is_reported_when_the_publish_succeeds():
+    client, _ = _client()
+    reported = []
+
+    async def report():
+        reported.append(True)
+
+    publisher = ServiceBusSignalPublisher(client)
+    publisher.on_unavailable = report
+
+    await publisher.publish(_message())
+
+    assert reported == []

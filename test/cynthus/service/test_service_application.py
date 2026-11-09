@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from cynthus.messaging.subscriber import ReceivedSignal
 from cynthus.messaging.subscription import CoreRecipeSignalSubscription
-from cynthus.service import ServiceApplication
+from cynthus.service import ServiceApplication, ServiceOutage
 from cynthus.service import service_application as module
 
 
@@ -289,3 +289,11 @@ def test_a_request_that_fails_because_the_bus_is_down_is_answered_with_503(parts
     assert response.status_code == 503
     assert response.json()['code'] == 'service_unavailable'
     assert response.headers['retry-after']
+
+
+def test_the_publisher_reports_an_unreachable_bus_through_the_outage_flag(parts):
+    with TestClient(build().initialize()) as client:
+        outage = client.app.state.outage
+
+        assert parts.publisher.on_unavailable == outage.report
+        assert isinstance(outage, ServiceOutage)
