@@ -66,10 +66,16 @@ class TokenVerifier:
         except jwt.InvalidTokenError as error:
             raise TokenError('invalid token') from error
 
+        # ADR-010: the claim is `tenant_id`, with `organization_id` as its deprecated alias; they are one value
+        tenant = payload.get('tenant_id', payload.get('organization_id'))
+
+        if 'tenant_id' in payload and 'organization_id' in payload and payload['tenant_id'] != payload['organization_id']:
+            raise TokenError('token names two different tenants')
+
         try:
             return TokenClaims(
                 subject=payload['sub'],
-                organization_id=payload['organization_id'],
+                organization_id=tenant if tenant is not None else payload['organization_id'],
                 workspace_id=payload['workspace_id'],
                 token_id=payload.get('jti'),
                 roles=payload.get('roles', []),

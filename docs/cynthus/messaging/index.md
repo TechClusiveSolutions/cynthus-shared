@@ -115,3 +115,9 @@ docs/cynthus/messaging/
 7. Add a documentation entry to the appropriate file under `docs/cynthus/messaging/component/`.
 
 The `__init_subclass__` guard in `SignalBase` will raise a `TypeError` at import time if any of `domain`, `aggregate`, or `action` is missing from a concrete signal class.
+
+---
+
+## Tenant id (ADR-010)
+
+Every signal carries `tenant_id`, the tenant the signal belongs to. `organization_id` is its deprecated alias and holds the same value: you may give either when you build a message, both are written to the JSON, and two different values are refused. A signal from a publisher that knows only `organization_id` still reads. The same holds for access tokens: they carry both `tenant_id` and `organization_id` claims with one value, the verifier accepts either, and `TokenClaims.tenant_id` gives the value. `organization_id` is removed after one release.
