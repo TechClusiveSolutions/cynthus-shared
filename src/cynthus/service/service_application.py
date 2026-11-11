@@ -8,12 +8,11 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from cynthus.core import RedisClient, logging
-from cynthus.messaging.publisher import ServiceBusSignalPublisher, SignalBusUnavailable
-from cynthus.messaging.subscriber import ServiceBusSignalSubscriber
+from cynthus.messaging.publisher import SignalBusUnavailable
 from cynthus.security import SignalAccessRecorder, TokenVerifier
 
-from .service_bus_connection import ServiceBusConnection
 from .service_outage import ServiceOutage
+from .signal_broker import SignalBroker
 from .signal_bus_unavailable_handler import signal_bus_unavailable_handler
 
 LOGGER = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ class ServiceApplication:
         Builds the FastAPI application every domain service shares
 
         The service supplies its name, its routers, the subscription it listens on and a handler. This class does the
-        rest: it opens the Redis client and the one Service Bus connection, turns every access decision into an audit
+        rest: it opens the Redis client and the one broker connection (Service Bus or RabbitMQ, per ``SIGNAL_BROKER``), turns every access decision into an audit
         signal, runs the subscriber for the life of the application, and closes everything on shutdown. It adds the
         index route and ``/signal/health``, which answers 503 while the subscriber is not running or the database does
         not answer.
@@ -127,14 +126,14 @@ class ServiceApplication:
         logger.info('Configuring lifespan for the %s application...', self.name)
 
         redis = RedisClient.from_environment()
-        connection = publisher = task = None
+        broker = publisher = task = None
 
         application.state.redis = redis
         application.state.token_verifier = TokenVerifier.from_environment()
 
         if self._subscription is not None:
-            connection = ServiceBusConnection.from_environment()
-            publisher = ServiceBusSignalPublisher.for_client(connection.client)
+            broker = SignalBroker.from_environment()
+            publisher = broker.publisher
 
             # Every access decision becomes an audit signal; the publisher shares this service's bus connection
             recorder = SignalAccessRecorder(publisher)
@@ -147,10 +146,10 @@ class ServiceApplication:
             # When the bus cannot be reached, say so in Redis for the Session service (and so the web and the mobile app)
             application.state.outage = ServiceOutage(redis)
             publisher.on_unavailable = application.state.outage.report
-            application.state.service_bus = connection.client
+            application.state.service_bus = broker.client
             application.state.signal_publisher = publisher
 
-            subscriber = ServiceBusSignalSubscriber(connection.client)
+            subscriber = broker.subscriber
             subscriber.subscribe(self._subscription.topic, self._subscription.name, self._handle(publisher))
 
             task = asyncio.create_task(subscriber.run())
@@ -169,9 +168,8 @@ class ServiceApplication:
         if self._shutdown is not None:
             await self._close(lambda: self._shutdown(application), 'the service')
 
-        if publisher is not None:
-            await self._close(publisher.close, 'the signal publisher')
-            await self._close(connection.close, 'the Service Bus connection')
+        if broker is not None:
+            await self._close(broker.close, 'the signal broker')
 
         await self._close(redis.close, 'the Redis client')
 

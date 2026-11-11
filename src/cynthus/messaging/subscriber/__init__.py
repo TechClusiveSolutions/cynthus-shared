@@ -1,3 +1,4 @@
+from .rabbitmq_signal_subscriber import RabbitMqSignalSubscriber
 from .received_signal import ReceivedSignal
 from .service_bus_signal_subscriber import ServiceBusSignalSubscriber
 from .signal_handler import SignalHandler
