@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pydantic import BaseModel, Field
 from typing import Any
 from uuid import UUID, uuid4
 
-from .event_action import EventAction
+from pydantic import BaseModel, Field
 
 from ..resource import Resource
-from ..system import System, Tenant, Workspace
-from ..user import User
+from ..system import Tenant, Workspace
+from .event_action import EventAction
 
 
 class Event(BaseModel):
@@ -21,6 +20,7 @@ class Event(BaseModel):
     tenant: Tenant
     workspace: Workspace
     correlation_id: UUID = Field(default_factory=uuid4)
+    service_id: UUID | None = Field(default=None, description='The service that recorded the event')
     resource: Resource
     occurred_on: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     action: EventAction

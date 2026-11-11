@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 
-from .tenant import Tenant
+from pydantic import BaseModel, Field, model_validator
 
 from ..user import User
+from .tenant import Tenant
 
 
 class Workspace(BaseModel):
@@ -17,3 +17,10 @@ class Workspace(BaseModel):
     name: str
     tenant: Tenant
     owner: User
+
+    @model_validator(mode='after')
+    def _check_tenant(self) -> Workspace:
+        if self.tenant.bridge:
+            raise ValueError('a parent tenant has no workspaces')
+
+        return self

@@ -1,10 +1,10 @@
 """Item resource class unit tests for the Cynthus project"""
 
-import pytest
-
 from datetime import datetime
 
-from cynthus.core.resource import Item, ItemAction, ItemBrand, ItemType
+import pytest
+
+from cynthus.core.resource import Item, ItemBrand
 
 
 class TestItem:

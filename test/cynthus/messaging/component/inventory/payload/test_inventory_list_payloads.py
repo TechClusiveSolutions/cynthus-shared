@@ -1,6 +1,5 @@
 """Unit tests for the inventory list payload classes."""
 
-import pytest
 
 from cynthus.messaging.component.inventory.payload import InventoryListRequestedPayload, InventoryListUpdatedPayload
 

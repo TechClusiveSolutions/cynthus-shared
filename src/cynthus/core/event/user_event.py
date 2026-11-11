@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from .event import Event
-
 from ..user import User
+from .event import Event
 
 
 class UserEvent(Event):

@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from pydantic import Field
+from typing import ClassVar
 from uuid import UUID
 
+from pydantic import Field
+
+from ..event import EventRequest, InventoryEvent, InventoryEventRequest, UserEvent
 from .service import Service
 from .service_domain import ServiceDomain
-
-from ..event import InventoryEventRequest
-
 
 SERVICE_ID = UUID('10000000-1000-1000-1000-100000000001')
 
@@ -21,15 +21,5 @@ class InventoryService(Service):
     name: str = Field(default='Inventory', frozen=True)
     domain: ServiceDomain = Field(default=ServiceDomain.CORE, frozen=True)
 
-    def build_event(self) -> InventoryEvent:
-        event = InventoryEvent()
-
-        return event
-
-
-    def build_event_request(self, ) -> InventoryEventRequest:
-        event = self.build_event()
-        request = InventoryEventRequest(event=event)
-
-        return request
-
+    event_class: ClassVar[type[UserEvent]] = InventoryEvent
+    event_request_class: ClassVar[type[EventRequest]] = InventoryEventRequest

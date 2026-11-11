@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from .resource import Resource
-
 from ..system import Workspace
+from .resource import Resource
 
 
 class WorkspaceResource(Resource):

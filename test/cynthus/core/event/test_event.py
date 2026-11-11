@@ -1,8 +1,6 @@
 """Event class unit tests for the Cynthus project"""
 
-import pytest
 
-from datetime import datetime, timezone
 
 from cynthus.core.event import Event, EventAction
 from cynthus.core.resource import StorageLocation
@@ -35,7 +33,7 @@ class TestEvent:
             workspace=workspace,
             resource=location,
             action=EventAction.CREATED,
-            actor=service,
+            service_id=service.id_,
             data=data
         )
 
@@ -46,4 +44,3 @@ class TestEvent:
 
     def test_event_request(self):
         pass
-        

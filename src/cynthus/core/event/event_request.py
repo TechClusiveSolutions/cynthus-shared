@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pydantic import BaseModel, Field
-from typing import Optional
 
-from .event import Event
+from pydantic import BaseModel, Field
 
 from ..system import System
 from ..user import User
+from .event import Event
 
 
 class EventRequest(BaseModel):

@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
-from uuid import UUID, uuid4
+from uuid import UUID
 
+from pydantic import BaseModel, Field
 
 import cynthus
-
 
 SYSTEM_ID = UUID('10000000-1000-1000-1000-100000000000')
 SYSTEM_VERSION = cynthus.__VERSION__

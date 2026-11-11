@@ -10,7 +10,7 @@ version and date.
 
 ## [Unreleased]
 
-- Nothing yet.
+- The core model classes (issue 93): `cynthus.core` now holds the classes that describe the ecosystem in one consistent layout: `User`, `System`, `Tenant`, `Workspace`, `BillingAccount`, the `Service` identities (`InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService`), `Resource` and its storage and item classes, and `Event`, `EventRequest` and `EventRequestResponse` with their decision classes. They are pure data (no web framework, database or broker; a test checks it) and serialize with pydantic. A `Tenant` can have a parent: a bridge tenant with the same owner and no workspaces, and a tenant is billed to one of its owner's billing accounts (ADR-010). A service builds the events and requests it records and the event names it in `service_id` (ADR-009). `cynthus.__VERSION__` is now the release in this change log and a test keeps them equal. Documented in `docs/cynthus/core/index.md`. Fixed on the way: `InventoryService.build_event` raised `NameError`, `EventRequestDecision` could not be created, and `EventRequestResponse` could not be built without a decision. Issue 93.
 
 ## [0.12.0] - 2026-11-12
 
