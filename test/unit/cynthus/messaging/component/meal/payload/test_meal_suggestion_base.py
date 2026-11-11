@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-SOURCE = Path(__file__).resolve().parents[6] / 'src' / 'cynthus' / 'messaging' / 'component' / 'meal' / 'payload' / 'meal_suggestion_base.py'
+SOURCE = Path(__file__).resolve().parents[7] / 'src' / 'cynthus' / 'messaging' / 'component' / 'meal' / 'payload' / 'meal_suggestion_base.py'
 
 
 def _syntax_error():
