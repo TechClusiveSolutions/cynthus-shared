@@ -10,7 +10,7 @@ version and date.
 
 ## [Unreleased]
 
-- Nothing yet.
+- `ServiceApplication` can host several domain services in one process (ADR-008, step 1): `ServiceApplication(name, modules=[ServiceModule(...), ...])` opens Redis, the token verifier and the broker once, subscribes every module and runs one subscriber. `/signal/health` lists the modules and answers 503 if any is unavailable, and `/signal/health/{module}` answers for one. The single-module arguments work unchanged. New `ServiceModule` class. New setting `SIGNAL_HANDLER_TIMEOUT_SECONDS` (default 60, `0` for no limit): a handler that runs longer is cancelled and its signal dead-lettered, for every service. Issue 112.
 
 ## [0.11.1] - 2026-11-11
 
