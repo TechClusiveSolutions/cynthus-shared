@@ -12,6 +12,10 @@ version and date.
 
 - Nothing yet.
 
+## [0.12.0] - 2026-11-12
+
+- `ServiceApplication` can host several domain services in one process (ADR-008, step 1): `ServiceApplication(name, modules=[ServiceModule(...), ...])` opens Redis, the token verifier and the broker once, subscribes every module and runs one subscriber. `/signal/health` lists the modules and answers 503 if any is unavailable, and `/signal/health/{module}` answers for one. The single-module arguments work unchanged. New `ServiceModule` class. New setting `SIGNAL_HANDLER_TIMEOUT_SECONDS` (default 60, `0` for no limit): a handler that runs longer is cancelled and its signal dead-lettered, for every service. Issue 112.
+
 ## [0.11.1] - 2026-11-11
 
 - Fixed: with RabbitMQ stopped, a request that published a signal got a 500 instead of the 503 Service Unavailable answer. While the broker connection reconnects, `aio_pika` raises a bare `RuntimeError`; `RabbitMqConnection.channel()` now reports it as a `ConnectionError`, so the publisher raises `SignalBusUnavailable` and the outage flag is set. Found in the whole-stack run on RabbitMQ (core 183). Issue 108.
