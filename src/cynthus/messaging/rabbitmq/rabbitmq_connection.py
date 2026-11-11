@@ -45,7 +45,11 @@ class RabbitMqConnection:
 
         connection = await self._connect()
 
-        return await connection.channel()
+        try:
+            return await connection.channel()
+        except RuntimeError as error:
+            # aio_pika's robust connection raises a bare RuntimeError while it is reconnecting after the broker went away
+            raise ConnectionError('The RabbitMQ connection is not open; it is reconnecting') from error
 
     async def close(self) -> None:
         if self._connection is not None:

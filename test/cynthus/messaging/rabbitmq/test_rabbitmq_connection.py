@@ -44,6 +44,17 @@ async def test_a_closed_connection_is_opened_again(fake_aio_pika):
 
 
 @pytest.mark.asyncio
+async def test_a_connection_that_is_reconnecting_reports_itself_as_a_connection_error(fake_aio_pika):
+    fake_aio_pika.connection.channel.side_effect = RuntimeError('Connection was not opened')
+
+    with pytest.raises(ConnectionError, match='reconnecting'):
+        await RabbitMqConnection('amqp://x').channel()
+
+    # The publisher treats OSError as "the broker cannot be reached", which gives SignalBusUnavailable
+    assert OSError in RabbitMqConnection.errors() and issubclass(ConnectionError, OSError)
+
+
+@pytest.mark.asyncio
 async def test_closing_closes_the_connection_and_a_second_close_does_nothing(fake_aio_pika):
     connection = RabbitMqConnection('amqp://x')
 
