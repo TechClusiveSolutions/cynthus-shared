@@ -199,3 +199,16 @@ def test_a_thing_deleted_with_what_it_holds_shares_one_timestamp(storage_locatio
 def test_a_shelf_is_not_default_and_fills_back_left_horizontally_at_first(storage_shelf, storage_location):
     assert storage_shelf.is_default is False and storage_location.is_default is False
     assert storage_shelf.fill_order.value == 'back_left_horizontal'
+
+
+def test_a_user_made_directly_has_no_external_account(user):
+    assert user.external_accounts == []
+
+
+def test_a_user_made_through_a_provider_has_an_external_account():
+    from cynthus.core.user import ExternalAccount
+
+    linked = UserFactory(external_accounts=[ExternalAccount(provider='google-oauth2', subject='1234')])
+
+    assert [(a.provider, a.subject) for a in linked.external_accounts] == [('google-oauth2', '1234')]
+    assert User.model_validate_json(linked.model_dump_json()) == linked

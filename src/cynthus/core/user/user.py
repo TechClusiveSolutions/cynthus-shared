@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from pydantic import Field
 
 from ..soft_deletable import SoftDeletable
+from .external_account import ExternalAccount
 
 
 class User(SoftDeletable):
@@ -14,3 +15,4 @@ class User(SoftDeletable):
     first_name: str
     last_name: str
     email: str
+    external_accounts: list[ExternalAccount] = Field(default_factory=list)
