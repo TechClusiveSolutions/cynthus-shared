@@ -15,7 +15,6 @@ version and date.
 ## [0.11.0] - 2026-11-10
 
 - Added a RabbitMQ broker behind the existing `SignalPublisher` and `SignalSubscriber` interfaces, chosen by the `SIGNAL_BROKER` setting (`servicebus` by default, `rabbitmq` or `memory`) with `RABBITMQ_URL` for the connection. `RabbitMqSignalPublisher` waits for the broker's confirmation and keeps the same 5-second attempt limit, 15-second cool-down and `SignalBusUnavailable` behaviour as the Service Bus publisher. `RabbitMqSignalSubscriber` reads one quorum queue per subscription, acknowledges what the handler accepts and dead-letters what it raises on, with the same delivery limit (10) and one-hour TTL as the emulator configuration. A process holds one broker connection, so the emulator's ten-connection cap no longer limits the stack when RabbitMQ is used. A new `SignalBroker` builds the publisher, subscriber and connection for the chosen broker and `ServiceApplication` now uses it, so services no longer name Service Bus. Behaviour with `SIGNAL_BROKER` unset is unchanged. Documented in `docs/cynthus/messaging/broker.md`; design in ADR-007 (cynthus docs repo, issue 34). Issue 103.
-- Nothing yet.
 
 ## [0.10.0] - 2026-11-08
 
