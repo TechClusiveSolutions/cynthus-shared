@@ -36,7 +36,7 @@ A service that builds its own publisher (the Core API, Auth, the Celery services
 - The caller's token travels beside the body as the `authorization` property (a header on RabbitMQ), never inside the body, and is never logged.
 - A handler that returns settles its signal. A handler that raises sends the signal to the dead-letter queue, and the signals behind it are not blocked.
 - Cancelling `run()` stops delivery and leaves the signals in hand unsettled, so the broker delivers them again.
-- A process holds one broker connection.
+- A process holds one broker connection. While the broker is away the connection reconnects by itself; a publish made meanwhile raises `SignalBusUnavailable` (so the caller gets the 503 answer), and publishing works again as soon as the broker returns.
 
 ---
 
