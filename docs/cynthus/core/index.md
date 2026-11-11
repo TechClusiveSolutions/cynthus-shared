@@ -19,10 +19,11 @@ The classes that describe the things in Cynthus: who a user is, what a tenant an
 
 | Package | Classes |
 |---|---|
+| `cynthus.core.soft_deletable` | `SoftDeletable`, the base of everything that holds a person's data |
 | `cynthus.core.user` | `User` |
 | `cynthus.core.system` | `System` (fixed identity and the version), `Tenant`, `TenantType`, `Workspace`, `BillingAccount` |
 | `cynthus.core.service` | `Service`, `ServiceDomain`, and one identity per service: `InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService` |
-| `cynthus.core.resource` | `Resource`, `WorkspaceResource`, `Item`, `StorageLocation`, `StorageShelf` and the join records |
+| `cynthus.core.resource` | `Resource`, `WorkspaceResource`, `Item`, `StorageLocation`, `StorageShelf`, `ShelfFillOrder` and the join records |
 | `cynthus.core.event` | `Event`, `UserEvent`, `SystemEvent`, `EventRequest`, `EventRequestResponse` and its decision classes |
 
 ---
@@ -53,6 +54,14 @@ A `Tenant` is the boundary of data ownership and access. It has a `type` (`perso
 
 ---
 
+## Defaults, fill order and soft deletes (ADR-011)
+
+- A `StorageLocation` and a `StorageShelf` have `is_default`. A workspace has at most one default location and a location at most one default shelf; the database enforces it, and these classes only carry the flag.
+- A `StorageShelf` has a `fill_order` (`ShelfFillOrder`): the corner the filling starts at and whether rows or columns come first. The default is `back_left_horizontal`.
+- `SoftDeletable` gives `User`, `Tenant`, `Workspace`, `BillingAccount`, every `Resource` and the join records a `deleted_at`, `is_deleted`, `soft_delete(at=None)` (which returns the time, so what a thing holds can share it) and `restore()`. Every delete is a soft delete; only an explicit data-removal request removes data.
+
+---
+
 ## Events
 
 An `Event` is an action (`EventAction`) taken on a `Resource` in a tenant and workspace, with a `correlation_id`, the time it `occurred_on`, free-form `data` and the `service_id` that recorded it. A `UserEvent` adds the `user`; a `SystemEvent` carries the `System`. An `EventRequest` asks for an event to be allowed (the requestor is a `User` or the `System`), and an `EventRequestResponse` records the decision (`approve`, `deny` and the two conditional forms), naming the service that decided.
@@ -62,3 +71,11 @@ An `Event` is an action (`EventAction`) taken on a `Resource` in a tenant and wo
 ## Version
 
 `cynthus.__VERSION__` is the release of cynthus-shared this code belongs to and is what `System().version` reports. A release changes it in the same pull request that dates the change log; a test fails if they differ.
+
+---
+
+## Test factories and fixtures
+
+`cynthus.core.test.factory` has a factory for every class (`UserFactory`, `TenantFactory`, `BridgeTenantFactory`, `ChildTenantFactory`, `WorkspaceFactory`, `StorageLocationFactory`, `EventFactory` and the rest), and `cynthus.core.test.fixture` has a pytest fixture for each, named for the class in snake case (`user`, `bridge_tenant`, `storage_shelf`). Related objects are consistent: a workspace is owned by its tenant's owner, an event's workspace belongs to its tenant, and a child tenant has a bridge parent with the same owner. Import the fixtures you need into a `conftest.py`; a factory takes overrides (`UserEventFactory(tenant=my_tenant, data={...})`).
+
+**Known limit:** an event holds its resource as the base `Resource`, so its JSON loses the fields of the real kind (a location's type, a shelf's slots). A test marks it as an expected failure; a tagged union on the resource would fix it.

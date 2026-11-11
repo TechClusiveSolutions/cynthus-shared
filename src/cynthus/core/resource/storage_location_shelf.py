@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from ..soft_deletable import SoftDeletable
 from .storage_location import StorageLocation
 from .storage_shelf import StorageShelf
 
 
-class StorageLocationShelf(BaseModel):
+class StorageLocationShelf(SoftDeletable):
     """Represents a storage shelf in a location resource"""
 
     id_: UUID = Field(default_factory=uuid4)

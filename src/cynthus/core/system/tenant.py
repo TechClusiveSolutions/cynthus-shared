@@ -4,14 +4,15 @@ from __future__ import annotations
 
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
 
+from ..soft_deletable import SoftDeletable
 from ..user import User
 from .billing_account import BillingAccount
 from .tenant_type import TenantType
 
 
-class Tenant(BaseModel):
+class Tenant(SoftDeletable):
     """
         Represents a tenant: the boundary of data ownership, isolation and access
 

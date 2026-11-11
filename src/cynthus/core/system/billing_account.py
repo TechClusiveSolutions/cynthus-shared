@@ -5,12 +5,13 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from ..soft_deletable import SoftDeletable
 from ..user import User
 
 
-class BillingAccount(BaseModel):
+class BillingAccount(SoftDeletable):
     """
         Represents a billing account
 

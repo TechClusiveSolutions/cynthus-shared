@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
 
+from ..soft_deletable import SoftDeletable
 from ..user import User
 from .tenant import Tenant
 
 
-class Workspace(BaseModel):
+class Workspace(SoftDeletable):
     """Represents a workspace resource"""
 
     id_: UUID = Field(default_factory=uuid4)
