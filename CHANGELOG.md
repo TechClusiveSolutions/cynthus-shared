@@ -10,6 +10,10 @@ version and date.
 
 ## [Unreleased]
 
+- Nothing yet.
+
+## [0.11.1] - 2026-11-11
+
 - Fixed: with RabbitMQ stopped, a request that published a signal got a 500 instead of the 503 Service Unavailable answer. While the broker connection reconnects, `aio_pika` raises a bare `RuntimeError`; `RabbitMqConnection.channel()` now reports it as a `ConnectionError`, so the publisher raises `SignalBusUnavailable` and the outage flag is set. Found in the whole-stack run on RabbitMQ (core 183). Issue 108.
 
 ## [0.11.0] - 2026-11-10
