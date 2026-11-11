@@ -11,6 +11,8 @@ version and date.
 ## [Unreleased]
 
 - `ServiceModule` takes the `Service` identity (ADR-009 step 2): `ServiceModule(service=InventoryService(), ...)` takes its name from the service, refuses a different name, and the signal health names the service by `service_id`. A module without a service works as before. Issue 119.
+- `tenant_id` beside `organization_id` in every signal and access token (ADR-010 step 1): the same value under both names; either may be given, both are written, and two different values are refused; old signals and tokens that carry only `organization_id` still read, and so do ones with only `tenant_id`. `TokenClaims.tenant_id` is new. `organization_id` is deprecated and goes after one release. Issue 120.
+- Nothing yet.
 
 ## [0.13.0] - 2026-11-12
 
