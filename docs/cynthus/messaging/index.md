@@ -97,6 +97,7 @@ docs/cynthus/messaging/
 │       ├── suggestion.md       ← meal.suggestion.* signals
 │       ├── tag.md              ← meal.tag.* signals
 │       └── vote.md             ← meal.vote.* signals
+├── broker.md                   ← choosing the broker: Service Bus or RabbitMQ
 ├── subscription.md             ← all per-service subscription classes
 └── topic.md                    ← topic classes
 ```

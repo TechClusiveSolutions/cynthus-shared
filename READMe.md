@@ -32,3 +32,6 @@ Never move or delete a published tag. A bad release is replaced by a new patch v
 | Tag | Adds |
 |---|---|
 | `v0.1.0` | The JWT classes in `cynthus.security`, the identity audit signals, the inventory request and response signals, and the shared signal publisher that keeps one sender open. |
+| `v0.11.0` | A RabbitMQ signal broker (`RabbitMqSignalPublisher`, `RabbitMqSignalSubscriber`) beside Service Bus, chosen by `SIGNAL_BROKER`, and the `SignalBroker` factory that `ServiceApplication` uses. Every release is listed in `CHANGELOG.md`. |
+| `v0.11.1` | A RabbitMQ broker that is reconnecting is reported as `SignalBusUnavailable`, so a request gets the 503 answer instead of a 500. |
+| `v0.12.0` | `ServiceApplication` can host several domain services in one process (`ServiceModule`, `modules=[...]`) over one broker connection, with per-module signal health, and a handler time limit (`SIGNAL_HANDLER_TIMEOUT_SECONDS`, default 60). |

@@ -58,3 +58,17 @@ class ReceivedSignal(BaseModel):
             correlation_id=None if message.correlation_id is None else _text(message.correlation_id),
             properties=properties,
         )
+
+    @classmethod
+    def from_rabbitmq(cls, message) -> 'ReceivedSignal':
+        """Builds the signal from an aio-pika ``IncomingMessage`` (header keys and values may arrive as bytes)."""
+
+        properties = {_text(key): _text(value) for key, value in (message.headers or {}).items()}
+
+        return cls(
+            event_type=_text(message.type or message.routing_key),
+            body=message.body.decode('utf-8'),
+            message_id=None if message.message_id is None else _text(message.message_id),
+            correlation_id=None if message.correlation_id is None else _text(message.correlation_id),
+            properties=properties,
+        )

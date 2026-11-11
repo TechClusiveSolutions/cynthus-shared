@@ -12,6 +12,18 @@ version and date.
 
 - Nothing yet.
 
+## [0.12.0] - 2026-11-12
+
+- `ServiceApplication` can host several domain services in one process (ADR-008, step 1): `ServiceApplication(name, modules=[ServiceModule(...), ...])` opens Redis, the token verifier and the broker once, subscribes every module and runs one subscriber. `/signal/health` lists the modules and answers 503 if any is unavailable, and `/signal/health/{module}` answers for one. The single-module arguments work unchanged. New `ServiceModule` class. New setting `SIGNAL_HANDLER_TIMEOUT_SECONDS` (default 60, `0` for no limit): a handler that runs longer is cancelled and its signal dead-lettered, for every service. Issue 112.
+
+## [0.11.1] - 2026-11-11
+
+- Fixed: with RabbitMQ stopped, a request that published a signal got a 500 instead of the 503 Service Unavailable answer. While the broker connection reconnects, `aio_pika` raises a bare `RuntimeError`; `RabbitMqConnection.channel()` now reports it as a `ConnectionError`, so the publisher raises `SignalBusUnavailable` and the outage flag is set. Found in the whole-stack run on RabbitMQ (core 183). Issue 108.
+
+## [0.11.0] - 2026-11-10
+
+- Added a RabbitMQ broker behind the existing `SignalPublisher` and `SignalSubscriber` interfaces, chosen by the `SIGNAL_BROKER` setting (`servicebus` by default, `rabbitmq` or `memory`) with `RABBITMQ_URL` for the connection. `RabbitMqSignalPublisher` waits for the broker's confirmation and keeps the same 5-second attempt limit, 15-second cool-down and `SignalBusUnavailable` behaviour as the Service Bus publisher. `RabbitMqSignalSubscriber` reads one quorum queue per subscription, acknowledges what the handler accepts and dead-letters what it raises on, with the same delivery limit (10) and one-hour TTL as the emulator configuration. A process holds one broker connection, so the emulator's ten-connection cap no longer limits the stack when RabbitMQ is used. A new `SignalBroker` builds the publisher, subscriber and connection for the chosen broker and `ServiceApplication` now uses it, so services no longer name Service Bus. Behaviour with `SIGNAL_BROKER` unset is unchanged. Documented in `docs/cynthus/messaging/broker.md`; design in ADR-007 (cynthus docs repo, issue 34). Issue 103.
+
 ## [0.10.0] - 2026-11-08
 
 - Bound the wait for an unreachable bus and share the outage through a Redis flag (#97) (#98)
