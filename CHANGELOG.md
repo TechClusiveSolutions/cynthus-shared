@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- `ServiceModule` takes the `Service` identity (ADR-009 step 2): `ServiceModule(service=InventoryService(), ...)` takes its name from the service, refuses a different name, and the signal health names the service by `service_id`. A module without a service works as before. Issue 119.
 - `Engagement`, `Place` and `Attendee` in the core model (ADR-011): an engagement has a time period that must end after it starts, an optional place of its own workspace (else the workspace's default place, of which there is at most one), attendees with food preferences, managers, materials and notes. Factories and fixtures included. Data classes only; no database yet. Issue 121.
 - Nothing yet.
 

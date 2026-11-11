@@ -21,7 +21,7 @@ The small classes every service that answers requests with signals needs, so eac
 | `SignalConsumer` | The receiver loop every service that listens to the bus needs: `SignalConsumer(client, subscription_name, handler).run()` hands each message of the subscription to an async handler, completes it when the handler accepts it, dead-letters it when the handler raises, and stops on cancellation without settling the message in hand. |
 | `SignalBroker` | The broker a process uses, chosen by `SIGNAL_BROKER` (`servicebus` by default, `rabbitmq` or `memory`). `SignalBroker.from_environment()` returns the `publisher`, the `subscriber` and the one shared connection (`client`); `close()` closes the publisher and then the connection. `ServiceApplication` uses it, so service code never names a broker. See `docs/cynthus/messaging/broker.md`. |
 | `ServiceApplication` | The FastAPI application every domain service shares: it opens Redis, the token verifier and the broker, subscribes the service, runs the subscriber, adds `/` and `/signal/health`, and closes everything on shutdown. It hosts one module or several (see below). |
-| `ServiceModule` | One domain service inside a `ServiceApplication`: `name`, `routers`, `subscription` and `handler` (given together), `signal_access`, `database`, `startup` and `shutdown`. |
+| `ServiceModule` | One domain service inside a `ServiceApplication`: `name`, `routers`, `subscription` and `handler` (given together), `signal_access`, `database`, `startup`, `shutdown` and `service`. `service` is the identity of the service (`cynthus.core.service.Service`, ADR-009); give it and the module takes its name from it (a different `name` is refused), and the health names the service by `service_id`. |
 
 ---
 
@@ -64,9 +64,9 @@ A deployable can host several domain services (ADR-008 in the `cynthus` document
 ServiceApplication(
     name='Domain',
     modules=[
-        ServiceModule(name='inventory', routers=[event], subscription=CoreInventorySignalSubscription(),
+        ServiceModule(service=InventoryService(), routers=[event], subscription=CoreInventorySignalSubscription(),
                       handler=handle_inventory, signal_access=inventory_access, database=inventory_database),
-        ServiceModule(name='profile', ...),
+        ServiceModule(service=ProfileService(), ...),
     ],
 ).initialize()
 ```

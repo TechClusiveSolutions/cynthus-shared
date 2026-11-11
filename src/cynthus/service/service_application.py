@@ -173,6 +173,10 @@ class ServiceApplication:
     async def _module_health(self, module: ServiceModule, request: Request) -> tuple:
         subscription = module.subscription
         health = {'subscription': subscription.name, 'topic': subscription.topic.name}
+
+        if module.service is not None:
+            health['service_id'] = str(module.service.id_)
+
         task = getattr(request.app.state, 'signal_task', None)
 
         if task is None or task.done():
