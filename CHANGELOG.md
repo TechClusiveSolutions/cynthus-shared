@@ -10,7 +10,7 @@ version and date.
 
 ## [Unreleased]
 
-- Nothing yet.
+- `ServiceModule` takes the `Service` identity (ADR-009 step 2): `ServiceModule(service=InventoryService(), ...)` takes its name from the service, refuses a different name, and the signal health names the service by `service_id`. A module without a service works as before. Issue 119.
 
 ## [0.13.0] - 2026-11-12
 
