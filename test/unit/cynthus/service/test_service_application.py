@@ -8,8 +8,13 @@ import pytest
 from fastapi import APIRouter
 from fastapi.testclient import TestClient
 
+from cynthus.core.service import InventoryService, ProfileService
 from cynthus.messaging.subscriber import ReceivedSignal
-from cynthus.messaging.subscription import CoreProfileSignalSubscription, CoreRecipeSignalSubscription
+from cynthus.messaging.subscription import (
+    CoreInventorySignalSubscription,
+    CoreProfileSignalSubscription,
+    CoreRecipeSignalSubscription,
+)
 from cynthus.service import ServiceApplication, ServiceModule, ServiceOutage
 from cynthus.service import service_application as module
 
@@ -546,3 +551,54 @@ def test_a_bad_handler_limit_stops_the_service_and_names_the_setting(parts, monk
 
     with pytest.raises(ValueError, match='SIGNAL_HANDLER_TIMEOUT_SECONDS must be a number of seconds'):
         build()
+
+
+# The Service identity of a module (ADR-009)
+
+def test_a_module_takes_its_name_from_its_service():
+    module = ServiceModule(service=InventoryService())
+
+    assert module.name == 'Inventory'
+    assert module.service.id_ == InventoryService().id_
+
+
+def test_a_module_may_repeat_the_name_of_its_service():
+    assert ServiceModule(name='Inventory', service=InventoryService()).name == 'Inventory'
+
+
+def test_a_module_cannot_be_named_other_than_its_service():
+    with pytest.raises(ValueError, match="is not the name of its service 'Inventory'"):
+        ServiceModule(name='Stock', service=InventoryService())
+
+
+def test_a_module_needs_a_name_or_a_service():
+    with pytest.raises(ValueError, match='needs a name or a service'):
+        ServiceModule()
+
+
+def test_a_module_without_a_service_works_as_before():
+    module = ServiceModule(name='Legacy')
+
+    assert module.service is None and module.name == 'Legacy'
+
+
+def test_the_health_names_each_service_by_id(parts):
+    application = ServiceApplication(name='Domain', modules=[
+        ServiceModule(service=InventoryService(), subscription=CoreInventorySignalSubscription(), handler=handler),
+        ServiceModule(service=ProfileService(), subscription=CoreProfileSignalSubscription(), handler=handler),
+    ]).initialize()
+
+    with TestClient(application) as client:
+        body = client.get('/signal/health').json()
+
+    assert body['modules']['Inventory']['service_id'] == str(InventoryService().id_)
+    assert body['modules']['Profile']['service_id'] == str(ProfileService().id_)
+
+
+def test_the_health_of_a_module_without_a_service_has_no_service_id(parts):
+    application = ServiceApplication(name='Domain', modules=[
+        ServiceModule(name='Legacy', subscription=CoreInventorySignalSubscription(), handler=handler),
+    ]).initialize()
+
+    with TestClient(application) as client:
+        assert 'service_id' not in client.get('/signal/health').json()
