@@ -32,3 +32,4 @@ Never move or delete a published tag. A bad release is replaced by a new patch v
 | Tag | Adds |
 |---|---|
 | `v0.1.0` | The JWT classes in `cynthus.security`, the identity audit signals, the inventory request and response signals, and the shared signal publisher that keeps one sender open. |
+| `v0.11.0` | A RabbitMQ signal broker (`RabbitMqSignalPublisher`, `RabbitMqSignalSubscriber`) beside Service Bus, chosen by `SIGNAL_BROKER`, and the `SignalBroker` factory that `ServiceApplication` uses. Every release is listed in `CHANGELOG.md`. |
