@@ -10,10 +10,13 @@ version and date.
 
 ## [Unreleased]
 
+- Nothing yet.
+
+## [0.14.0] - 2026-11-12
+
 - `ServiceModule` takes the `Service` identity (ADR-009 step 2): `ServiceModule(service=InventoryService(), ...)` takes its name from the service, refuses a different name, and the signal health names the service by `service_id`. A module without a service works as before. Issue 119.
 - `tenant_id` beside `organization_id` in every signal and access token (ADR-010 step 1): the same value under both names; either may be given, both are written, and two different values are refused; old signals and tokens that carry only `organization_id` still read, and so do ones with only `tenant_id`. `TokenClaims.tenant_id` is new. `organization_id` is deprecated and goes after one release. Issue 120.
 - `Engagement`, `Place` and `Attendee` in the core model (ADR-011): an engagement has a time period that must end after it starts, an optional place of its own workspace (else the workspace's default place, of which there is at most one), attendees with food preferences, managers, materials and notes. Factories and fixtures included. Data classes only; no database yet. Issue 121.
-- Nothing yet.
 
 ## [0.13.0] - 2026-11-12
 
