@@ -5,7 +5,7 @@ from pathlib import Path
 
 import cynthus
 
-CHANGELOG = Path(__file__).resolve().parents[2] / 'CHANGELOG.md'
+CHANGELOG = Path(__file__).resolve().parents[3] / 'CHANGELOG.md'
 
 
 def test_the_reported_version_is_the_latest_dated_release_in_the_change_log():

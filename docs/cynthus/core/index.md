@@ -2,7 +2,7 @@
 
 The classes that describe the things in Cynthus: who a user is, what a tenant and a workspace are, which service acted, what a resource is, and what happened to it. They are plain pydantic models, laid out the same way everywhere, so a thing looks the same to every service and every repository that uses it. The decisions behind them are ADR-009 (the Service object) and ADR-010 (tenants) in the `cynthus` documentation repository.
 
-**These classes are pure data.** They import no web framework, database or broker (`fastapi`, `sqlalchemy`, `azure`, `aio_pika`, `cynthus.service`, `cynthus.messaging`), so any code can use them and they serialize with pydantic (`model_dump(mode='json')`, `model_validate_json`). The runtime side of a service lives in `cynthus.service` and imports these, never the reverse. A test enforces it (`test/cynthus/core/test_layering.py`).
+**These classes are pure data.** They import no web framework, database or broker (`fastapi`, `sqlalchemy`, `azure`, `aio_pika`, `cynthus.service`, `cynthus.messaging`), so any code can use them and they serialize with pydantic (`model_dump(mode='json')`, `model_validate_json`). The runtime side of a service lives in `cynthus.service` and imports these, never the reverse. A test enforces it (`test/unit/cynthus/core/test_layering.py`).
 
 ---
 
