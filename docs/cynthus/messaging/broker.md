@@ -65,7 +65,7 @@ RabbitMQ has no scheduled enqueue, sessions, duplicate detection or lock renewal
 
 ## Testing
 
-Unit tests run without a broker: `aio_pika` is imported only when the RabbitMQ connection is used, and the tests replace it with a fake (`test/cynthus/messaging/conftest.py`). The tests under `test/integration` run against a real RabbitMQ and are skipped unless `RABBITMQ_URL` is set:
+Unit tests run without a broker: `aio_pika` is imported only when the RabbitMQ connection is used, and the tests replace it with a fake (`test/unit/cynthus/messaging/conftest.py`). The tests under `test/integration` run against a real RabbitMQ and are skipped unless `RABBITMQ_URL` is set:
 
 ```bash
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management

@@ -10,7 +10,8 @@ version and date.
 
 ## [Unreleased]
 
-- Nothing yet.
+- The core model classes (issue 93): `cynthus.core` now holds the classes that describe the ecosystem in one consistent layout: `User`, `System`, `Tenant`, `Workspace`, `BillingAccount`, the `Service` identities (`InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService`), `Resource` and its storage and item classes, and `Event`, `EventRequest` and `EventRequestResponse` with their decision classes. They are pure data (no web framework, database or broker; a test checks it) and serialize with pydantic. A `Tenant` can have a parent: a bridge tenant with the same owner and no workspaces, and a tenant is billed to one of its owner's billing accounts (ADR-010). A service builds the events and requests it records and the event names it in `service_id` (ADR-009). `cynthus.__VERSION__` is now the release in this change log and a test keeps them equal. Documented in `docs/cynthus/core/index.md`. Fixed on the way: `InventoryService.build_event` raised `NameError`, `EventRequestDecision` could not be created, and `EventRequestResponse` could not be built without a decision. Issue 93.
+- Defaults, fill order and soft deletes in the core model (ADR-011): `is_default` on storage locations and shelves, a `fill_order` on shelves (`ShelfFillOrder`, eight values, default `back_left_horizontal`), and `SoftDeletable` (`deleted_at`, `soft_delete`, `restore`) on users, tenants, workspaces, billing accounts, resources and the join records. `User.external_accounts` (`ExternalAccount`: provider and subject), empty for a user created directly and set for one created through the Auth0 integration. Test factories and pytest fixtures for every core class (`cynthus.core.test`), documented in `docs/cynthus/core/index.md`. The tests moved from `test/cynthus` to `test/unit/cynthus`. Issue 93.
 
 ## [0.12.0] - 2026-11-12
 
