@@ -68,8 +68,8 @@ SHIM = {'meal': None, 'part': None, 'subscription': None, 'faststream_azure': No
 #   * test_meal_suggestion_rejected_message.py calls fixture values as factories and expects a `deleted` lifecycle,
 #     contradicting test_meal_suggestion_messages.py (`updated`), which is what the code does.
 collect_ignore = [
-    'cynthus/messaging/component/meal/message/test_meal_plan_created_message.py',
-    'cynthus/messaging/component/meal/message/test_meal_suggestion_rejected_message.py',
+    'unit/cynthus/messaging/component/meal/message/test_meal_plan_created_message.py',
+    'unit/cynthus/messaging/component/meal/message/test_meal_suggestion_rejected_message.py',
 ]
 
 # Modules that are known not to import today (explained in the docs). Tests for these are reported as expected
