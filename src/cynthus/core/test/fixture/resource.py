@@ -3,16 +3,22 @@
 from pytest import fixture
 
 from ...resource import (
+    Attendee,
+    Engagement,
     Item,
     ItemBrand,
+    Place,
     StorageLocation,
     StorageLocationShelf,
     StorageShelf,
     StorageShelfItem,
 )
 from ..factory import (
+    AttendeeFactory,
+    EngagementFactory,
     ItemBrandFactory,
     ItemFactory,
+    PlaceFactory,
     StorageLocationFactory,
     StorageLocationShelfFactory,
     StorageShelfFactory,
@@ -28,6 +34,21 @@ def item_brand() -> ItemBrand:
 @fixture
 def item() -> Item:
     return ItemFactory()
+
+
+@fixture
+def place() -> Place:
+    return PlaceFactory()
+
+
+@fixture
+def attendee() -> Attendee:
+    return AttendeeFactory()
+
+
+@fixture
+def engagement() -> Engagement:
+    return EngagementFactory()
 
 
 @fixture

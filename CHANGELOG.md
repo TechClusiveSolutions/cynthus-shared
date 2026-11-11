@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- `Engagement`, `Place` and `Attendee` in the core model (ADR-011): an engagement has a time period that must end after it starts, an optional place of its own workspace (else the workspace's default place, of which there is at most one), attendees with food preferences, managers, materials and notes. Factories and fixtures included. Data classes only; no database yet. Issue 121.
 - Nothing yet.
 
 ## [0.13.0] - 2026-11-12
