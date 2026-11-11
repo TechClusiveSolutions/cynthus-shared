@@ -20,6 +20,8 @@ The small classes every service that answers requests with signals needs, so eac
 | `DatabaseUrl` | Builds the SQLAlchemy URL (`postgresql+psycopg`) from `DB_HOST` (default `db`), `DB_PORT` (default `5432`), `DB_NAME`, `DB_USERNAME` and `DB_PASSWORD`. |
 | `SignalConsumer` | The receiver loop every service that listens to the bus needs: `SignalConsumer(client, subscription_name, handler).run()` hands each message of the subscription to an async handler, completes it when the handler accepts it, dead-letters it when the handler raises, and stops on cancellation without settling the message in hand. |
 | `SignalBroker` | The broker a process uses, chosen by `SIGNAL_BROKER` (`servicebus` by default, `rabbitmq` or `memory`). `SignalBroker.from_environment()` returns the `publisher`, the `subscriber` and the one shared connection (`client`); `close()` closes the publisher and then the connection. `ServiceApplication` uses it, so service code never names a broker. See `docs/cynthus/messaging/broker.md`. |
+| `ServiceApplication` | The FastAPI application every domain service shares: it opens Redis, the token verifier and the broker, subscribes the service, runs the subscriber, adds `/` and `/signal/health`, and closes everything on shutdown. It hosts one module or several (see below). |
+| `ServiceModule` | One domain service inside a `ServiceApplication`: `name`, `routers`, `subscription` and `handler` (given together), `signal_access`, `database`, `startup` and `shutdown`. |
 
 ---
 
@@ -51,3 +53,25 @@ task = asyncio.create_task(consumer.run())
 ```
 
 The subscription names are the ones in the emulator configuration (`cynthus-api-sub`, `cynthus-inventory-sub`, `cynthus-profile-sub`, `cynthus-analysis-sub`).
+
+---
+
+## Hosting several modules in one process
+
+A deployable can host several domain services (ADR-008 in the `cynthus` documentation repository). Each is a `ServiceModule`; the application opens Redis, the token verifier and the broker once, subscribes every module on that one connection, and runs one subscriber:
+
+```python
+ServiceApplication(
+    name='Domain',
+    modules=[
+        ServiceModule(name='inventory', routers=[event], subscription=CoreInventorySignalSubscription(),
+                      handler=handle_inventory, signal_access=inventory_access, database=inventory_database),
+        ServiceModule(name='profile', ...),
+    ],
+).initialize()
+```
+
+- A service that passes `routers`, `subscription`, `handler` and the rest directly keeps working as before; give either `modules` or those arguments, not both. Module names must differ.
+- Start-up hooks run in module order and shutdown hooks in reverse, then every database is disposed.
+- `/signal/health` answers 200 only while the subscriber runs and every module's database answers. With several modules the body is `{"status": ..., "modules": {name: {...}}}`; `/signal/health/{module}` answers for one (404 for an unknown name). The subscriber is shared, so if it stops, every module is unavailable; the database check is per module.
+- A handler that has not finished after `SIGNAL_HANDLER_TIMEOUT_SECONDS` (default 60; `0` means no limit) is cancelled and its signal is dead-lettered, so one slow module cannot hold up the others on the same event loop. A value that is not a number of seconds, 0 or more, stops the service at start-up.
