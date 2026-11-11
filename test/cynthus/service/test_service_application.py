@@ -22,17 +22,16 @@ class Parts:
         self.redis.close = AsyncMock()
 
         self.client = MagicMock()
-        self.connection = MagicMock(client=self.client)
-        self.connection.close = AsyncMock()
-
         self.publisher = MagicMock()
-        self.publisher.close = AsyncMock()
 
         self.verifier = MagicMock()
 
         self.stopped = asyncio.Event()
         self.subscriber = MagicMock()
         self.subscriber.run = AsyncMock(side_effect=self._forever)
+
+        self.broker = MagicMock(publisher=self.publisher, subscriber=self.subscriber, client=self.client)
+        self.broker.close = AsyncMock()
 
     async def _forever(self):
         try:
@@ -46,10 +45,8 @@ def parts():
     fakes = Parts()
 
     with patch.object(module.RedisClient, 'from_environment', return_value=fakes.redis), \
-            patch.object(module.ServiceBusConnection, 'from_environment', return_value=fakes.connection), \
-            patch.object(module.ServiceBusSignalPublisher, 'for_client', return_value=fakes.publisher), \
-            patch.object(module.TokenVerifier, 'from_environment', return_value=fakes.verifier), \
-            patch.object(module, 'ServiceBusSignalSubscriber', return_value=fakes.subscriber):
+            patch.object(module.SignalBroker, 'from_environment', return_value=fakes.broker), \
+            patch.object(module.TokenVerifier, 'from_environment', return_value=fakes.verifier):
         yield fakes
 
 
@@ -99,10 +96,9 @@ def test_startup_works_without_a_signal_access_object(parts):
         pass
 
 
-def test_the_subscriber_listens_on_the_subscription_with_the_shared_client(parts):
-    with patch.object(module, 'ServiceBusSignalSubscriber', return_value=parts.subscriber) as subscriber_class:
-        with TestClient(build().initialize()):
-            subscriber_class.assert_called_once_with(parts.client)
+def test_the_subscriber_listens_on_the_subscription_of_the_chosen_broker(parts):
+    with TestClient(build().initialize()):
+        pass
 
     topic, name, _ = parts.subscriber.subscribe.call_args.args
 
@@ -134,19 +130,18 @@ def test_shutdown_stops_the_subscriber_and_closes_everything(parts):
         pass
 
     assert parts.stopped.is_set()
-    parts.publisher.close.assert_awaited_once()
-    parts.connection.close.assert_awaited_once()
+    parts.broker.close.assert_awaited_once()
     parts.redis.close.assert_awaited_once()
     database.dispose.assert_awaited_once()
 
 
 def test_a_failure_while_closing_one_thing_does_not_stop_the_others(parts):
-    parts.publisher.close.side_effect = RuntimeError('boom')
+    parts.broker.close.side_effect = RuntimeError('boom')
 
     with TestClient(build().initialize()):
         pass
 
-    parts.connection.close.assert_awaited_once()
+    parts.broker.close.assert_awaited_once()
     parts.redis.close.assert_awaited_once()
 
 
@@ -156,7 +151,7 @@ def test_a_subscriber_that_failed_is_logged_and_shutdown_goes_on(parts):
     with TestClient(build().initialize()):
         pass
 
-    parts.connection.close.assert_awaited_once()
+    parts.broker.close.assert_awaited_once()
 
 
 def test_health_is_unavailable_before_the_application_has_started(parts):
@@ -226,7 +221,7 @@ def test_a_service_without_a_bus_gets_redis_and_the_index_route_only(parts):
         assert not hasattr(application.state, 'service_bus')
 
     parts.redis.close.assert_awaited_once()
-    parts.connection.close.assert_not_awaited()
+    parts.broker.close.assert_not_awaited()
     parts.subscriber.run.assert_not_awaited()
 
 
@@ -270,7 +265,7 @@ def test_a_shutdown_hook_that_fails_does_not_stop_the_rest(parts):
     with TestClient(build(shutdown=shutdown).initialize()):
         pass
 
-    parts.connection.close.assert_awaited_once()
+    parts.broker.close.assert_awaited_once()
     parts.redis.close.assert_awaited_once()
 
 
