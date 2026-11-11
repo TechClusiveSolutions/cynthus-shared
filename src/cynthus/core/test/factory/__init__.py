@@ -8,8 +8,11 @@ from .event import (
     UserEventFactory,
 )
 from .resource import (
+    AttendeeFactory,
+    EngagementFactory,
     ItemBrandFactory,
     ItemFactory,
+    PlaceFactory,
     StorageLocationFactory,
     StorageLocationShelfFactory,
     StorageShelfFactory,

@@ -61,6 +61,7 @@ class TokenIssuer:
             'iat': issued_at,
             'exp': issued_at + self.ttl_seconds,
             'organization_id': str(organization_id),
+            'tenant_id': str(organization_id),
             'workspace_id': str(workspace_id),
             'roles': list(roles),
             'permissions': list(permissions),

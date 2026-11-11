@@ -12,6 +12,12 @@ version and date.
 
 - Nothing yet.
 
+## [0.14.0] - 2026-11-12
+
+- `ServiceModule` takes the `Service` identity (ADR-009 step 2): `ServiceModule(service=InventoryService(), ...)` takes its name from the service, refuses a different name, and the signal health names the service by `service_id`. A module without a service works as before. Issue 119.
+- `tenant_id` beside `organization_id` in every signal and access token (ADR-010 step 1): the same value under both names; either may be given, both are written, and two different values are refused; old signals and tokens that carry only `organization_id` still read, and so do ones with only `tenant_id`. `TokenClaims.tenant_id` is new. `organization_id` is deprecated and goes after one release. Issue 120.
+- `Engagement`, `Place` and `Attendee` in the core model (ADR-011): an engagement has a time period that must end after it starts, an optional place of its own workspace (else the workspace's default place, of which there is at most one), attendees with food preferences, managers, materials and notes. Factories and fixtures included. Data classes only; no database yet. Issue 121.
+
 ## [0.13.0] - 2026-11-12
 
 - The core model classes (issue 93): `cynthus.core` now holds the classes that describe the ecosystem in one consistent layout: `User`, `System`, `Tenant`, `Workspace`, `BillingAccount`, the `Service` identities (`InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService`), `Resource` and its storage and item classes, and `Event`, `EventRequest` and `EventRequestResponse` with their decision classes. They are pure data (no web framework, database or broker; a test checks it) and serialize with pydantic. A `Tenant` can have a parent: a bridge tenant with the same owner and no workspaces, and a tenant is billed to one of its owner's billing accounts (ADR-010). A service builds the events and requests it records and the event names it in `service_id` (ADR-009). `cynthus.__VERSION__` is now the release in this change log and a test keeps them equal. Documented in `docs/cynthus/core/index.md`. Fixed on the way: `InventoryService.build_event` raised `NameError`, `EventRequestDecision` could not be created, and `EventRequestResponse` could not be built without a decision. Issue 93.

@@ -1,4 +1,5 @@
 import time
+import uuid
 from unittest.mock import patch
 
 import jwt
@@ -103,3 +104,47 @@ def test_the_token_id_is_carried_into_the_claims(verifier, issuer, identity):
     issued = issuer.issue_token(**identity)
 
     assert verifier.verify_sync(issued.token).token_id == issued.token_id
+
+
+def test_a_token_carries_the_tenant_id_and_its_organization_alias(verifier, issuer, identity):
+    token = issuer.issue(**identity)
+    payload = jwt.decode(token, options={'verify_signature': False})
+    claims = verifier.verify_sync(token)
+
+    assert payload['tenant_id'] == payload['organization_id'] == str(identity['organization_id'])
+    assert claims.tenant_id == claims.organization_id == identity['organization_id']
+
+
+def test_a_token_with_only_the_tenant_id_claim_is_accepted(verifier, issuer, identity):
+    now = int(time.time())
+    token = jwt.encode(
+        {'iss': 'cynthus-auth', 'aud': 'cynthus', 'sub': str(identity['subject']), 'iat': now, 'exp': now + 60,
+         'tenant_id': str(identity['organization_id']), 'workspace_id': str(identity['workspace_id'])},
+        issuer._private_key, algorithm='RS256',
+    )
+
+    assert verifier.verify_sync(token).tenant_id == identity['organization_id']
+
+
+def test_a_token_with_only_the_organization_id_claim_is_still_accepted(verifier, issuer, identity):
+    now = int(time.time())
+    token = jwt.encode(
+        {'iss': 'cynthus-auth', 'aud': 'cynthus', 'sub': str(identity['subject']), 'iat': now, 'exp': now + 60,
+         'organization_id': str(identity['organization_id']), 'workspace_id': str(identity['workspace_id'])},
+        issuer._private_key, algorithm='RS256',
+    )
+
+    assert verifier.verify_sync(token).tenant_id == identity['organization_id']
+
+
+def test_a_token_naming_two_different_tenants_is_rejected(verifier, issuer, identity):
+    now = int(time.time())
+    token = jwt.encode(
+        {'iss': 'cynthus-auth', 'aud': 'cynthus', 'sub': str(identity['subject']), 'iat': now, 'exp': now + 60,
+         'tenant_id': str(uuid.uuid4()), 'organization_id': str(identity['organization_id']),
+         'workspace_id': str(identity['workspace_id'])},
+        issuer._private_key, algorithm='RS256',
+    )
+
+    with pytest.raises(TokenError, match='two different tenants'):
+        verifier.verify_sync(token)

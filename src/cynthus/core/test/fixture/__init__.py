@@ -8,8 +8,11 @@ from .event import (
     user_event,
 )
 from .resource import (
+    attendee,
+    engagement,
     item,
     item_brand,
+    place,
     storage_location,
     storage_location_shelf,
     storage_shelf,

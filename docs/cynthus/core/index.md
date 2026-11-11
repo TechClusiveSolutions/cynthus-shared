@@ -23,7 +23,7 @@ The classes that describe the things in Cynthus: who a user is, what a tenant an
 | `cynthus.core.user` | `User` |
 | `cynthus.core.system` | `System` (fixed identity and the version), `Tenant`, `TenantType`, `Workspace`, `BillingAccount` |
 | `cynthus.core.service` | `Service`, `ServiceDomain`, and one identity per service: `InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService` |
-| `cynthus.core.resource` | `Resource`, `WorkspaceResource`, `Item`, `StorageLocation`, `StorageShelf`, `ShelfFillOrder` and the join records |
+| `cynthus.core.resource` | `Resource`, `WorkspaceResource`, `Item`, `Place`, `Engagement`, `Attendee`, `StorageLocation`, `StorageShelf`, `ShelfFillOrder` and the join records |
 | `cynthus.core.event` | `Event`, `UserEvent`, `SystemEvent`, `EventRequest`, `EventRequestResponse` and its decision classes |
 
 ---
@@ -59,6 +59,12 @@ A `Tenant` is the boundary of data ownership and access. It has a `type` (`perso
 - A `StorageLocation` and a `StorageShelf` have `is_default`. A workspace has at most one default location and a location at most one default shelf; the database enforces it, and these classes only carry the flag.
 - A `StorageShelf` has a `fill_order` (`ShelfFillOrder`): the corner the filling starts at and whether rows or columns come first. The default is `back_left_horizontal`.
 - `SoftDeletable` gives `User`, `Tenant`, `Workspace`, `BillingAccount`, every `Resource` and the join records a `deleted_at`, `is_deleted`, `soft_delete(at=None)` (which returns the time, so what a thing holds can share it) and `restore()`. Every delete is a soft delete; only an explicit data-removal request removes data.
+
+---
+
+## Engagements and places
+
+An `Engagement` is a gathering planned in a workspace: a time period (`starts_at`, `ends_at`; it must end after it starts), an optional `Place`, `attendees` with their food preferences, `managers`, the `materials` needed and logistical `notes`. A `Place` is a venue with an address and a capacity. A workspace has at most one default place (`is_default`, ADR-011); an engagement that names none uses it, and `engagement.place_or(default)` gives the place it uses. An engagement can only use a place of its own workspace. There are no tables for them yet; Logistics has no database.
 
 ---
 
