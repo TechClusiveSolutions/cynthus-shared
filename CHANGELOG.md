@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- The decision model of ADR-013 in `cynthus.core.event`: an `EventRequest` has an `id_` and `in_reply_to`; `EventRequestResponse` keeps every decision (`decisions`, with `decision` the latest and `in_effect`) instead of one; `EventRequestDecision.reason` is now `answer_reason` (plain text, with the shared words in `EventRequestAnswerReason`, renamed to `approval_required`, `approval_granted`, `approval_denied` and gaining `expired`); the single condition is replaced by `DecisionCondition` records with a status, an `expires_at` and an exact-match test against a reply's answer reason (`settle`, `expire`). Factories, fixtures and docs follow. Breaking for code that used `EventRequestDecision.reason`, `EventRequestDecisionReason` or `EventRequestDecisionCondition` (nothing in the services does). Issue 127.
 - Nothing yet.
 
 ## [0.14.0] - 2026-11-12

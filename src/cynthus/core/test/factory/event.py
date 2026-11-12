@@ -3,12 +3,13 @@
 import factory
 
 from ...event import (
+    DecisionCondition,
     Event,
     EventAction,
     EventRequest,
+    EventRequestAnswerReason,
     EventRequestDecision,
     EventRequestDecisionAnswer,
-    EventRequestDecisionReason,
     EventRequestResponse,
     InventoryEvent,
     SystemEvent,
@@ -54,12 +55,19 @@ class EventRequestFactory(factory.Factory):
     requestor = factory.SelfAttribute('event.user')
 
 
+class DecisionConditionFactory(factory.Factory):
+    class Meta:
+        model = DecisionCondition
+
+    condition = EventRequestAnswerReason.APPROVAL_GRANTED.value
+
+
 class EventRequestDecisionFactory(factory.Factory):
     class Meta:
         model = EventRequestDecision
 
     answer = EventRequestDecisionAnswer.APPROVED
-    reason = EventRequestDecisionReason.PERMITTED
+    answer_reason = EventRequestAnswerReason.PERMITTED.value
 
 
 class EventRequestResponseFactory(factory.Factory):

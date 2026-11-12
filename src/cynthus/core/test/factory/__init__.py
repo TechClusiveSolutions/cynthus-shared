@@ -1,4 +1,5 @@
 from .event import (
+    DecisionConditionFactory,
     EventFactory,
     EventRequestDecisionFactory,
     EventRequestFactory,
