@@ -19,6 +19,10 @@ from .lifecycle_action import LifecycleAction
 from .message import SignalMessage
 from .payload import SignalPayload
 
+# Auth
+from .public_auth_workspace_role_created import PublicAuthWorkspaceRoleCreatedSignal
+from .public_auth_workspace_role_updated import PublicAuthWorkspaceRoleUpdatedSignal
+
 # Inventory Items
 from .public_inventory_item_added import PublicInventoryItemAddedSignal
 from .public_inventory_item_removed import PublicInventoryItemRemovedSignal

@@ -7,6 +7,7 @@ class SignalDomainType(str, Enum):
     """Standardized signal domain mutations"""
 
     ANALYSIS: str = 'analysis'
+    AUTH: str = 'auth'
     IDENTITY: str = 'identity'
     INTELLIGENCE: str = 'intelligence'
     INVENTORY: str = 'inventory'

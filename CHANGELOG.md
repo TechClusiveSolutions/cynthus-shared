@@ -12,6 +12,10 @@ version and date.
 
 - Nothing yet.
 
+## [0.17.0] - 2026-11-12
+
+- Added the `auth` signal domain and the signals `public.auth.workspace_role.created` and `public.auth.workspace_role.updated`, with their messages and payloads (`AuthWorkspaceRoleCreatedMessage`, `AuthWorkspaceRoleUpdatedMessage`). Auth publishes them when a request for access is made and answered (ADR-013, #135).
+
 ## [0.16.0] - 2026-11-12
 
 - Tokens with the nil workspace id are refused (issue 131): `RequirePermission` answers `409` with `{"error": ..., "code": "workspace_required"}` after the permission check and records a rejected decision; `SignalAccess.authorize` refuses it too (`Forbidden('workspace_required')`). New: `TokenClaims.has_workspace`, `NO_WORKSPACE`, and an optional `code` on `AccessDenied` that the error envelope carries.
