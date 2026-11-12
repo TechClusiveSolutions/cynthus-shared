@@ -12,6 +12,10 @@ version and date.
 
 - Nothing yet.
 
+## [0.16.0] - 2026-11-12
+
+- Tokens with the nil workspace id are refused (issue 131): `RequirePermission` answers `409` with `{"error": ..., "code": "workspace_required"}` after the permission check and records a rejected decision; `SignalAccess.authorize` refuses it too (`Forbidden('workspace_required')`). New: `TokenClaims.has_workspace`, `NO_WORKSPACE`, and an optional `code` on `AccessDenied` that the error envelope carries.
+
 ## [0.15.0] - 2026-11-12
 
 - The decision model of ADR-013 in `cynthus.core.event`: an `EventRequest` has an `id_` and `in_reply_to`; `EventRequestResponse` keeps every decision (`decisions`, with `decision` the latest and `in_effect`) instead of one; `EventRequestDecision.reason` is now `answer_reason` (plain text, with the shared words in `EventRequestAnswerReason`, renamed to `approval_required`, `approval_granted`, `approval_denied` and gaining `expired`); the single condition is replaced by `DecisionCondition` records with a status, an `expires_at` and an exact-match test against a reply's answer reason (`settle`, `expire`). Factories, fixtures and docs follow. Breaking for code that used `EventRequestDecision.reason`, `EventRequestDecisionReason` or `EventRequestDecisionCondition` (nothing in the services does). Issue 127.

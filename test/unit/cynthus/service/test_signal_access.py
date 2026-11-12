@@ -207,3 +207,14 @@ async def test_a_received_signal_without_a_token_is_refused():
 
     with pytest.raises(TokenError, match='missing'):
         await access().authorize(ReceivedSignal(event_type='a.b.c', body='{}'), signal(who()), 'inventory:read')
+
+
+@pytest.mark.asyncio
+async def test_a_token_with_the_nil_workspace_id_is_refused_even_when_the_signal_names_it():
+    from cynthus.security import NO_WORKSPACE
+    from cynthus.service.forbidden import Forbidden
+
+    identity = {**who(), 'workspace_id': NO_WORKSPACE}
+
+    with pytest.raises(Forbidden, match='workspace_required'):
+        await access().authorize(message(identity), signal(identity), 'inventory:read')

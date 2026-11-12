@@ -12,6 +12,8 @@ from .token_error import TokenError
 
 LOGGER = logging.getLogger(__name__)
 
+WORKSPACE_REQUIRED = 'workspace_required'
+
 
 class RequirePermission:
     """Use as `Depends(RequirePermission('inventory:read'))`; the route receives the verified `TokenClaims`.
@@ -57,6 +59,13 @@ class RequirePermission:
             await self._record(application, 'denied', claims, self.permission, resource, method)
 
             raise AccessDenied(403, f'the token does not grant {self.permission}')
+
+        if not claims.has_workspace:
+            logger.info('Refused %s: the token has no workspace', claims.subject)
+
+            await self._record(application, 'rejected', WORKSPACE_REQUIRED, resource, method)
+
+            raise AccessDenied(409, 'make or choose a workspace first', WORKSPACE_REQUIRED)
 
         await self._record(application, 'granted', claims, self.permission, resource, method)
 

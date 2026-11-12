@@ -127,3 +127,21 @@ async def test_authorize_can_be_used_without_a_request(application, issuer, iden
 
     assert claims.subject == identity['subject']
     assert recorder.events == [('granted', identity['subject'], 'inventory:read', '/ws/1', 'WEBSOCKET')]
+
+
+def test_a_token_with_the_nil_workspace_id_is_refused_with_409_and_recorded_as_rejected(client, issuer, identity, recorder):
+    from cynthus.security import NO_WORKSPACE
+
+    response = client.get('/read', headers=bearer(issuer, {**identity, 'workspace_id': NO_WORKSPACE}))
+
+    assert response.status_code == 409
+    assert response.json()['code'] == 'workspace_required'
+    assert recorder.events == [('rejected', 'workspace_required', '/read', 'GET')]
+
+
+def test_the_permission_is_checked_before_the_workspace(client, issuer, identity):
+    from cynthus.security import NO_WORKSPACE
+
+    response = client.get('/read', headers=bearer(issuer, {**identity, 'workspace_id': NO_WORKSPACE}, permissions=()))
+
+    assert response.status_code == 403
