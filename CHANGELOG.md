@@ -10,6 +10,10 @@ version and date.
 
 ## [Unreleased]
 
+- Nothing yet.
+
+## [0.17.0] - 2026-11-12
+
 - Added the `auth` signal domain and the signals `public.auth.workspace_role.created` and `public.auth.workspace_role.updated`, with their messages and payloads (`AuthWorkspaceRoleCreatedMessage`, `AuthWorkspaceRoleUpdatedMessage`). Auth publishes them when a request for access is made and answered (ADR-013, #135).
 
 ## [0.16.0] - 2026-11-12
