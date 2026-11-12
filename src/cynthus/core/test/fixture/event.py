@@ -3,6 +3,7 @@
 from pytest import fixture
 
 from ...event import (
+    DecisionCondition,
     Event,
     EventRequest,
     EventRequestDecision,
@@ -12,6 +13,7 @@ from ...event import (
     UserEvent,
 )
 from ..factory import (
+    DecisionConditionFactory,
     EventFactory,
     EventRequestDecisionFactory,
     EventRequestFactory,
@@ -20,6 +22,11 @@ from ..factory import (
     SystemEventFactory,
     UserEventFactory,
 )
+
+
+@fixture
+def decision_condition() -> DecisionCondition:
+    return DecisionConditionFactory()
 
 
 @fixture

@@ -70,7 +70,19 @@ An `Engagement` is a gathering planned in a workspace: a time period (`starts_at
 
 ## Events
 
-An `Event` is an action (`EventAction`) taken on a `Resource` in a tenant and workspace, with a `correlation_id`, the time it `occurred_on`, free-form `data` and the `service_id` that recorded it. A `UserEvent` adds the `user`; a `SystemEvent` carries the `System`. An `EventRequest` asks for an event to be allowed (the requestor is a `User` or the `System`), and an `EventRequestResponse` records the decision (`approve`, `deny` and the two conditional forms), naming the service that decided.
+An `Event` is an action (`EventAction`) taken on a `Resource` in a tenant and workspace, with a `correlation_id`, the time it `occurred_on`, free-form `data` and the `service_id` that recorded it. A `UserEvent` adds the `user`; a `SystemEvent` carries the `System`. An `EventRequest` asks for an event to be allowed (the requestor is a `User` or the `System`). It has an `id_` and may name the request it answers (`in_reply_to`), so an approval points at the request for access it approves.
+
+An `EventRequestResponse` keeps the **decisions** made on a request (ADR-013). Decisions are only added, never changed: `decision` is the latest and `in_effect` says whether the request has taken effect. A decision has an `answer` (`approved`, `approved_conditionally`, `denied`, `denied_conditionally`), an `answer_reason` that says why the answer is what it is (`EventRequestAnswerReason`: `permitted`, `approval_required`, `approval_granted`, `approval_denied`, `insufficient_privileges`, `expired`, or a reason of a service's own such as `payment_method_linked`), the service that decided, and its **conditions**.
+
+A `DecisionCondition` is what a conditional answer waits for. Its `condition` is the answer reason a reply must carry, and the test is an exact match: `reply.answer_reason == condition.condition`. `response.settle(reply_decision)` answers the open conditions: a matching reply satisfies the condition, a reply that denies fails it, any other leaves it open. A condition may have an `expires_at`; `response.expire(now)` expires the open ones that are due and adds a decision that denies the request with the answer reason `expired`, so expiry is recorded, not silent.
+
+```python
+access = EventRequestResponse(request=jills_request)
+access.conditionally_approve('approval_required', [DecisionCondition(condition='approval_granted', expires_at=in_five_days)])
+
+approval = EventRequestResponse(request=jacks_request)      # jacks_request.in_reply_to == jills_request.id_
+access.settle(approval.approve('approval_granted'))          # the condition is met; access.in_effect is True
+```
 
 ---
 
