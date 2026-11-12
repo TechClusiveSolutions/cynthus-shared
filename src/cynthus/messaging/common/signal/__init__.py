@@ -1,9 +1,5 @@
 from .action_type import SignalActionType
 
-# Auth
-from .public_auth_workspace_role_created import PublicAuthWorkspaceRoleCreatedSignal
-from .public_auth_workspace_role_updated import PublicAuthWorkspaceRoleUpdatedSignal
-
 # Identity
 from .audit_identity_access_denied import AuditIdentityAccessDeniedSignal
 from .audit_identity_access_granted import AuditIdentityAccessGrantedSignal
@@ -22,6 +18,10 @@ from .energy_level import EnergyLevel
 from .lifecycle_action import LifecycleAction
 from .message import SignalMessage
 from .payload import SignalPayload
+
+# Auth
+from .public_auth_workspace_role_created import PublicAuthWorkspaceRoleCreatedSignal
+from .public_auth_workspace_role_updated import PublicAuthWorkspaceRoleUpdatedSignal
 
 # Inventory Items
 from .public_inventory_item_added import PublicInventoryItemAddedSignal
