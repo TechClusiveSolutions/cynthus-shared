@@ -11,6 +11,8 @@ from .signal import (
     DecisionReason,
     EnergyLevel,
     LifecycleAction,
+    PublicAuthWorkspaceRoleCreatedSignal,
+    PublicAuthWorkspaceRoleUpdatedSignal,
     PublicInventoryItemAddedSignal,
     PublicInventoryItemRemovedSignal,
     PublicInventoryItemRequestedSignal,
