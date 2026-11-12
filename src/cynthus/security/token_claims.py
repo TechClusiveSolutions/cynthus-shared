@@ -5,6 +5,9 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+# The workspace id of a person who has not made a workspace yet (ADR-010 amendment); no data belongs to it
+NO_WORKSPACE = UUID(int=0)
+
 
 class TokenClaims(BaseModel):
     """What a verified access token says about its holder"""
@@ -25,6 +28,12 @@ class TokenClaims(BaseModel):
         """The tenant the user belongs to (ADR-010); the value that ``organization_id`` also holds."""
 
         return self.organization_id
+
+    @property
+    def has_workspace(self) -> bool:
+        """False for the nil workspace id: the person has not made or entered a workspace, so no data is theirs to reach."""
+
+        return self.workspace_id != NO_WORKSPACE
 
     def has_permission(self, permission: str) -> bool:
         return permission in self.permissions

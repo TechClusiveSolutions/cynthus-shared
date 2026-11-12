@@ -51,6 +51,13 @@ class SignalAccess:
 
             raise Forbidden(f'the token does not grant {permission}')
 
+        if not claims.has_workspace:
+            logger.warning('Refused signal %s: the token has no workspace', signal_message.event_id)
+
+            await self._record('rejected', 'workspace_required', resource, method)
+
+            raise Forbidden('workspace_required')
+
         if (claims.organization_id, claims.workspace_id, claims.subject) != (
             signal_message.organization_id, signal_message.workspace_id, signal_message.actor_id,
         ):
