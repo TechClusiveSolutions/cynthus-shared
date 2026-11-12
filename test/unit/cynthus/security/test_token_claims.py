@@ -35,3 +35,10 @@ def test_claims_cannot_be_changed():
 def test_the_token_id_is_optional():
     assert _claims().token_id is None
     assert _claims(token_id='t1').token_id == 't1'
+
+
+def test_the_nil_workspace_id_means_no_workspace():
+    from cynthus.security import NO_WORKSPACE
+
+    assert not _claims(workspace_id=NO_WORKSPACE).has_workspace
+    assert _claims().has_workspace

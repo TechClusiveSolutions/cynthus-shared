@@ -35,3 +35,17 @@ def test_a_caller_without_the_permission_gets_403_and_no_challenge():
     assert response.status_code == 403
     assert response.json() == {'error': 'nope'}
     assert 'www-authenticate' not in response.headers
+
+
+def test_a_code_is_carried_in_the_envelope_when_given():
+    application = FastAPI()
+    application.add_exception_handler(AccessDenied, access_denied_handler)
+
+    @application.get('/')
+    async def route():
+        raise AccessDenied(409, 'make a workspace', 'workspace_required')
+
+    response = TestClient(application).get('/')
+
+    assert response.status_code == 409
+    assert response.json() == {'error': 'make a workspace', 'code': 'workspace_required'}

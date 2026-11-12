@@ -10,7 +10,7 @@ version and date.
 
 ## [Unreleased]
 
-- Nothing yet.
+- Tokens with the nil workspace id are refused (issue 131): `RequirePermission` answers `409` with `{"error": ..., "code": "workspace_required"}` after the permission check and records a rejected decision; `SignalAccess.authorize` refuses it too (`Forbidden('workspace_required')`). New: `TokenClaims.has_workspace`, `NO_WORKSPACE`, and an optional `code` on `AccessDenied` that the error envelope carries.
 
 ## [0.15.0] - 2026-11-12
 
