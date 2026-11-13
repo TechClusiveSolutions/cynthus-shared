@@ -6,33 +6,49 @@ Services trust the signed access token only (engineering standards, section 4). 
 
 ## Classes
 
-| Class | Used by | Purpose |
-|---|---|---|
-| `TokenIssuer` | `cynthus-auth` | Signs access tokens with an RSA private key (RS256) and publishes the public key as a JWKS. |
-| `TokenVerifier` | API, Inventory and other services | Fetches the JWKS and checks the signature, issuer, audience and expiry of a token. |
-| `TokenClaims` | all | The verified identity: user, `organization_id`, `workspace_id`, token id, roles and permissions. |
-| `IssuedToken` | `cynthus-auth` | What `TokenIssuer.issue_token` returns: the signed token plus its id, key id and lifetime. |
-| `RequirePermission` | services with HTTP routes | FastAPI dependency: `Depends(RequirePermission('inventory:read'))` verifies the bearer token and the permission. |
-| `AccessDenied` | services with HTTP routes | 401 or 403 error; register `access_denied_handler` to answer `{"error": ...}`. |
-| `AccessRecorder` | services that audit access | Hook told about every granted, rejected and denied decision. Does nothing until a service subclasses it. |
-| `SignalAccessRecorder` | API and Inventory services | An `AccessRecorder` that publishes `audit.identity.access.granted`, `.rejected` and `.denied` through a `SignalPublisher`. |
-| `BearerToken` | services that read HTTP headers or message properties | Extracts the token from an `Authorization: Bearer <token>` value. |
-| `TokenError` | all | Raised for any token that is missing, malformed, expired or not trusted. Carries a short `reason`. |
+- `TokenIssuer`
+  - Used by: `cynthus-auth`
+  - Purpose: Signs access tokens with an RSA private key (RS256) and publishes the public key as a JWKS.
+- `TokenVerifier`
+  - Used by: API, Inventory and other services
+  - Purpose: Fetches the JWKS and checks the signature, issuer, audience and expiry of a token.
+- `TokenClaims`
+  - Used by: all
+  - Purpose: The verified identity: user, `organization_id`, `workspace_id`, token id, roles and permissions.
+- `IssuedToken`
+  - Used by: `cynthus-auth`
+  - Purpose: What `TokenIssuer.issue_token` returns: the signed token plus its id, key id and lifetime.
+- `RequirePermission`
+  - Used by: services with HTTP routes
+  - Purpose: FastAPI dependency: `Depends(RequirePermission('inventory:read'))` verifies the bearer token and the permission.
+- `AccessDenied`
+  - Used by: services with HTTP routes
+  - Purpose: 401 or 403 error; register `access_denied_handler` to answer `{"error": ...}`.
+- `AccessRecorder`
+  - Used by: services that audit access
+  - Purpose: Hook told about every granted, rejected and denied decision. Does nothing until a service subclasses it.
+- `SignalAccessRecorder`
+  - Used by: API and Inventory services
+  - Purpose: An `AccessRecorder` that publishes `audit.identity.access.granted`, `.rejected` and `.denied` through a `SignalPublisher`.
+- `BearerToken`
+  - Used by: services that read HTTP headers or message properties
+  - Purpose: Extracts the token from an `Authorization: Bearer <token>` value.
+- `TokenError`
+  - Used by: all
+  - Purpose: Raised for any token that is missing, malformed, expired or not trusted. Carries a short `reason`.
 
 ---
 
 ## Token contents
 
-| Claim | Meaning |
-|---|---|
-| `iss` | Issuer. Defaults to `cynthus-auth`. |
-| `aud` | Audience. Defaults to `cynthus`. |
-| `sub` | The user's id. |
-| `jti` | The token's own id. Audit signals use it to name a token without recording the token. |
-| `iat`, `exp` | Issue and expiry times, in seconds since the epoch. |
-| `organization_id`, `workspace_id` | The tenant the token is valid for. Required. |
-| `roles` | Roles granted to the user, for example `workspace_administrator`. |
-| `permissions` | What the token may do, for example `inventory:read` and `inventory:write`. |
+- `iss`: Issuer. Defaults to `cynthus-auth`.
+- `aud`: Audience. Defaults to `cynthus`.
+- `sub`: The user's id.
+- `jti`: The token's own id. Audit signals use it to name a token without recording the token.
+- `iat`, `exp`: Issue and expiry times, in seconds since the epoch.
+- `organization_id`, `workspace_id`: The tenant the token is valid for. Required.
+- `roles`: Roles granted to the user, for example `workspace_administrator`.
+- `permissions`: What the token may do, for example `inventory:read` and `inventory:write`.
 
 A token that lacks `exp`, `iat`, `sub`, `iss`, `aud`, `organization_id` or `workspace_id` is rejected. Only RS256 is accepted, so an unsigned token or one signed with a shared secret never verifies.
 
@@ -42,11 +58,9 @@ A token that lacks `exp`, `iat`, `sub`, `iss`, `aud`, `organization_id` or `work
 
 `TokenVerifier.from_environment()` reads these variables:
 
-| Variable | Default |
-|---|---|
-| `AUTH_JWKS_URL` | `http://auth:8000/.well-known/jwks.json` |
-| `AUTH_ISSUER` | `cynthus-auth` |
-| `AUTH_AUDIENCE` | `cynthus` |
+- `AUTH_JWKS_URL`: `http://auth:8000/.well-known/jwks.json`
+- `AUTH_ISSUER`: `cynthus-auth`
+- `AUTH_AUDIENCE`: `cynthus`
 
 The keys are cached and fetched again when a token names a key id that is not cached, so a key rotation needs no restart.
 

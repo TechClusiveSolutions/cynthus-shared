@@ -17,14 +17,42 @@ Tags are free-form labels applied to meal entries (e.g. `"quick"`, `"comfort-foo
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the tag was applied. | `"2026-06-09T20:20:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `tag_id` | `str` | Yes | — | The identifier of the created tag record. | `"tag_01HXYZABC"` |
-| `meal_id` | `str` | Yes | — | The identifier of the meal the tag was applied to. | `"meal_01HXYZDEF"` |
-| `tag` | `str` | Yes | — | The tag value. No enforced normalisation at the signal layer — normalisation is the responsibility of `cynthus-recipe`. | `"quick"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the tag was applied.
+  - Example: `"2026-06-09T20:20:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `tag_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the created tag record.
+  - Example: `"tag_01HXYZABC"`
+- `meal_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the meal the tag was applied to.
+  - Example: `"meal_01HXYZDEF"`
+- `tag`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The tag value. No enforced normalisation at the signal layer - normalisation is the responsibility of `cynthus-recipe`.
+  - Example: `"quick"`
 
 ### Wire example
 
@@ -66,13 +94,36 @@ Tags are free-form labels applied to meal entries (e.g. `"quick"`, `"comfort-foo
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the tag was removed. | `"2026-06-10T10:00:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `tag_id` | `str` | Yes | — | The identifier of the removed tag record. | `"tag_01HXYZABC"` |
-| `meal_id` | `str` | Yes | — | The identifier of the meal the tag was removed from. | `"meal_01HXYZDEF"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the tag was removed.
+  - Example: `"2026-06-10T10:00:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `tag_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the removed tag record.
+  - Example: `"tag_01HXYZABC"`
+- `meal_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the meal the tag was removed from.
+  - Example: `"meal_01HXYZDEF"`
 
 ### Wire example
 

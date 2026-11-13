@@ -17,12 +17,26 @@ A user registers an account, and signs in with a username and password.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the user. |
-| `username` | `str` | Yes | — | The username that was presented. |
-| `method` | `str` | No | `'password'` | How the user proved who they are. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user.
+- `username`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The username that was presented.
+- `method`
+  - Type: `str`
+  - Required: No
+  - Default: `'password'`
+  - Description: How the user proved who they are.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -41,11 +55,21 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the new user. |
-| `username` | `str` | Yes | — | The email address the account was registered with. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the new user.
+- `username`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The email address the account was registered with.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -64,10 +88,20 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `username` | `str` | Yes | — | The username that was presented. |
-| `reason` | `str` | No | `'invalid_credentials'` | Why the sign-in was refused. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `username`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The username that was presented.
+- `reason`
+  - Type: `str`
+  - Required: No
+  - Default: `'invalid_credentials'`
+  - Description: Why the sign-in was refused.
 
 Set the envelope `lifecycle_action` to `created`.

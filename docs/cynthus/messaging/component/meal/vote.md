@@ -1,26 +1,17 @@
 # Meal Vote Signals (`public.meal.vote.*`)
 
-Group meal voting allows workspace members to collectively choose from proposed meal options. A vote session progresses through `initiated → cast (×N) → resolved` or is short-circuited by Astri via `auto_resolved` when a stalemate is detected.
+Group meal voting allows workspace members to collectively choose from proposed meal options. A vote session progresses through `initiated -> cast (xN) -> resolved` or is short-circuited by Astri via `auto_resolved` when a stalemate is detected.
 
 ---
 
 ## Vote lifecycle
 
-```text
-cynthus-core-api publishes: public.meal.vote.initiated
-        │
-        ▼
-Members cast votes (one per member)
-        │
-        ├── Each vote: cynthus-core-api publishes: public.meal.vote.cast
-        │
-        ▼
-Vote closes (deadline reached or unanimous)
-        │
-        ├── Winner determined → cynthus-core-api publishes: public.meal.vote.resolved
-        │
-        └── Stalemate → cynthus-chat (Astri) publishes: public.meal.vote.auto_resolved
-```
+1. `cynthus-core-api` publishes `public.meal.vote.initiated`.
+2. Members cast votes, one per member. Each vote makes `cynthus-core-api` publish `public.meal.vote.cast`.
+3. The vote closes when the deadline is reached or the vote is unanimous.
+4. Then one of two things happens:
+   - A winner is determined: `cynthus-core-api` publishes `public.meal.vote.resolved`.
+   - Stalemate: `cynthus-chat` (Astri) publishes `public.meal.vote.auto_resolved`.
 
 ---
 
@@ -37,18 +28,56 @@ Vote closes (deadline reached or unanimous)
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the vote was opened. | `"2026-06-09T17:00:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `vote_id` | `str` | Yes | — | The identifier of the vote session. | `"vote_01HXYZABC"` |
-| `group_id` | `str` | Yes | — | The identifier of the group this vote belongs to. | `"grp_01HXYZ123"` |
-| `proposed_meal` | `str` | Yes | — | The display name of the proposed meal. | `"Chicken Stir Fry"` |
-| `recipe_id` | `str` | Yes | — | The identifier of the recipe backing the proposed meal. | `"rcp_01HXYZDEF"` |
-| `expires_at` | `datetime` | Yes | — | The moment the vote closes. Serialised as ISO 8601 UTC. | `"2026-06-09T17:30:00.000000+00:00"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the vote was opened.
+  - Example: `"2026-06-09T17:00:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `vote_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the vote session.
+  - Example: `"vote_01HXYZABC"`
+- `group_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the group this vote belongs to.
+  - Example: `"grp_01HXYZ123"`
+- `proposed_meal`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The display name of the proposed meal.
+  - Example: `"Chicken Stir Fry"`
+- `recipe_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the recipe backing the proposed meal.
+  - Example: `"rcp_01HXYZDEF"`
+- `expires_at`
+  - Type: `datetime`
+  - Required: Yes
+  - Default: none
+  - Description: The moment the vote closes. Serialised as ISO 8601 UTC.
+  - Example: `"2026-06-09T17:30:00.000000+00:00"`
 
-**Serialisation note:** `expires_at` is serialised by a `@field_serializer` that enforces UTC — even if a non-UTC `datetime` is provided at construction, the serialised form will always be UTC.
+**Serialisation note:** `expires_at` is serialised by a `@field_serializer` that enforces UTC - even if a non-UTC `datetime` is provided at construction, the serialised form will always be UTC.
 
 ### Wire example
 
@@ -92,15 +121,48 @@ Vote closes (deadline reached or unanimous)
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the vote was cast. | `"2026-06-09T17:05:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `vote_id` | `str` | Yes | — | The identifier of the vote session. | `"vote_01HXYZABC"` |
-| `group_id` | `str` | Yes | — | The identifier of the group this vote belongs to. | `"grp_01HXYZ123"` |
-| `vote` | `str` | Yes | — | The voter's submitted choice. | `"yes"`, `"no"`, or `"pending"` |
-| `current_tally` | `dict[str, int]` | Yes | — | Running tally of all votes by choice at the moment this vote was cast. Consumers should use this snapshot rather than accumulating totals across events. | `{"yes": 2, "no": 1, "pending": 1}` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the vote was cast.
+  - Example: `"2026-06-09T17:05:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `vote_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the vote session.
+  - Example: `"vote_01HXYZABC"`
+- `group_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the group this vote belongs to.
+  - Example: `"grp_01HXYZ123"`
+- `vote`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The voter's submitted choice.
+  - Example: `"yes"`, `"no"`, or `"pending"`
+- `current_tally`
+  - Type: `dict[str, int]`
+  - Required: Yes
+  - Default: none
+  - Description: Running tally of all votes by choice at the moment this vote was cast. Consumers should use this snapshot rather than accumulating totals across events.
+  - Example: `{"yes": 2, "no": 1, "pending": 1}`
 
 ### Wire example
 
@@ -141,15 +203,48 @@ Vote closes (deadline reached or unanimous)
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the vote was resolved. | `"2026-06-09T17:30:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `vote_id` | `str` | Yes | — | The identifier of the concluded vote session. | `"vote_01HXYZABC"` |
-| `group_id` | `str` | Yes | — | The identifier of the group this vote belongs to. | `"grp_01HXYZ123"` |
-| `resolution` | `str` | Yes | — | The display name of the winning meal choice. | `"Chicken Stir Fry"` |
-| `recipe_id` | `str` | Yes | — | The identifier of the recipe backing the winning choice. | `"rcp_01HXYZDEF"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the vote was resolved.
+  - Example: `"2026-06-09T17:30:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `vote_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the concluded vote session.
+  - Example: `"vote_01HXYZABC"`
+- `group_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the group this vote belongs to.
+  - Example: `"grp_01HXYZ123"`
+- `resolution`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The display name of the winning meal choice.
+  - Example: `"Chicken Stir Fry"`
+- `recipe_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the recipe backing the winning choice.
+  - Example: `"rcp_01HXYZDEF"`
 
 ### Wire example
 
@@ -192,17 +287,60 @@ Vote closes (deadline reached or unanimous)
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment Astri resolved the stalemate. | `"2026-06-09T17:30:05.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `vote_id` | `str` | Yes | — | The identifier of the stalemated vote session. | `"vote_01HXYZABC"` |
-| `group_id` | `str` | Yes | — | The identifier of the group this vote belongs to. | `"grp_01HXYZ123"` |
-| `resolution` | `str` | Yes | — | The display name of the meal Astri selected. | `"Chicken Stir Fry"` |
-| `recipe_id` | `str` | Yes | — | The identifier of the recipe backing Astri's selection. | `"rcp_01HXYZDEF"` |
-| `tiebreak_rationale` | `str` | Yes | — | Astri's explanation for the tiebreak decision. Displayed to group members via `cynthus-notification`. | `"Chosen because it uses ingredients expiring today and matches everyone's hard constraints."` |
-| `resolved_by` | `str` | Yes | — | The identity of the resolving actor. | `"astri"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment Astri resolved the stalemate.
+  - Example: `"2026-06-09T17:30:05.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `vote_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the stalemated vote session.
+  - Example: `"vote_01HXYZABC"`
+- `group_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the group this vote belongs to.
+  - Example: `"grp_01HXYZ123"`
+- `resolution`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The display name of the meal Astri selected.
+  - Example: `"Chicken Stir Fry"`
+- `recipe_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the recipe backing Astri's selection.
+  - Example: `"rcp_01HXYZDEF"`
+- `tiebreak_rationale`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: Astri's explanation for the tiebreak decision. Displayed to group members via `cynthus-notification`.
+  - Example: `"Chosen because it uses ingredients expiring today and matches everyone's hard constraints."`
+- `resolved_by`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identity of the resolving actor.
+  - Example: `"astri"`
 
 ### Wire example
 

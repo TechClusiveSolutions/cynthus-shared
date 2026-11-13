@@ -17,10 +17,20 @@ An account's email address is verified with the single-use link sent to it.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the user whose address was verified. |
-| `username` | `str` | Yes | — | The email address that was verified. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user whose address was verified.
+- `username`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The email address that was verified.
 
 Set the envelope `lifecycle_action` to `updated`.

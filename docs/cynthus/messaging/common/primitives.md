@@ -12,14 +12,20 @@ These classes form the structural foundation that every signal, payload, and mes
 
 The four canonical state-mutation verbs used on all Pydantic entity models. Constraining mutations to these four values prevents event-type explosion on the bus.
 
-| Value | String | Usage |
-|---|---|---|
-| `CREATED` | `"created"` | A new entity was persisted for the first time. |
-| `UPDATED` | `"updated"` | One or more fields on an existing entity changed. |
-| `DELETED` | `"deleted"` | An entity was removed or soft-deleted. |
-| `SNAPSHOT` | `"snapshot"` | A full point-in-time state capture, typically from a scheduled job or reconciliation pass. |
+- `CREATED`
+  - String: `"created"`
+  - Usage: A new entity was persisted for the first time.
+- `UPDATED`
+  - String: `"updated"`
+  - Usage: One or more fields on an existing entity changed.
+- `DELETED`
+  - String: `"deleted"`
+  - Usage: An entity was removed or soft-deleted.
+- `SNAPSHOT`
+  - String: `"snapshot"`
+  - Usage: A full point-in-time state capture, typically from a scheduled job or reconciliation pass.
 
-Every `SignalMessage` carries a `lifecycle_action` field typed to this enum. Downstream consumers use it to decide how to apply the incoming payload to their local state — they do not need to parse `event_type` to determine mutation semantics.
+Every `SignalMessage` carries a `lifecycle_action` field typed to this enum. Downstream consumers use it to decide how to apply the incoming payload to their local state - they do not need to parse `event_type` to determine mutation semantics.
 
 ---
 
@@ -29,20 +35,42 @@ Every `SignalMessage` carries a `lifecycle_action` field typed to this enum. Dow
 
 Extended action vocabulary for the `action` component of a signal name. The four `LifecycleAction` values cover entity mutations; `SignalActionType` adds domain-event verbs for aggregates that have richer lifecycle semantics.
 
-| Value | String | Used by |
-|---|---|---|
-| `ACCEPTED` | `"accepted"` | `meal.suggestion.accepted` |
-| `ASSOCIATED` | `"associated"` | `meal.recipes.associated` |
-| `AUTO_RESOLVED` | `"auto_resolved"` | `meal.vote.auto_resolved` |
-| `CAST` | `"cast"` | `meal.vote.cast` |
-| `CREATED` | `"created"` | `meal.plan.created`, `meal.tag.created`, `meal.rating.created` |
-| `DELETED` | `"deleted"` | `meal.plan.deleted`, `meal.tag.deleted`, `meal.rating.deleted` |
-| `GENERATED` | `"generated"` | `meal.suggestion.generated` |
-| `INITIATED` | `"initiated"` | `meal.vote.initiated` |
-| `REJECTED` | `"rejected"` | `meal.suggestion.rejected` |
-| `REQUESTED` | `"requested"` | `meal.suggestion.requested` |
-| `RESOLVED` | `"resolved"` | `meal.vote.resolved` |
-| `UPDATED` | `"updated"` | `meal.plan.updated`, `meal.rating.updated` |
+- `ACCEPTED`
+  - String: `"accepted"`
+  - Used by: `meal.suggestion.accepted`
+- `ASSOCIATED`
+  - String: `"associated"`
+  - Used by: `meal.recipes.associated`
+- `AUTO_RESOLVED`
+  - String: `"auto_resolved"`
+  - Used by: `meal.vote.auto_resolved`
+- `CAST`
+  - String: `"cast"`
+  - Used by: `meal.vote.cast`
+- `CREATED`
+  - String: `"created"`
+  - Used by: `meal.plan.created`, `meal.tag.created`, `meal.rating.created`
+- `DELETED`
+  - String: `"deleted"`
+  - Used by: `meal.plan.deleted`, `meal.tag.deleted`, `meal.rating.deleted`
+- `GENERATED`
+  - String: `"generated"`
+  - Used by: `meal.suggestion.generated`
+- `INITIATED`
+  - String: `"initiated"`
+  - Used by: `meal.vote.initiated`
+- `REJECTED`
+  - String: `"rejected"`
+  - Used by: `meal.suggestion.rejected`
+- `REQUESTED`
+  - String: `"requested"`
+  - Used by: `meal.suggestion.requested`
+- `RESOLVED`
+  - String: `"resolved"`
+  - Used by: `meal.vote.resolved`
+- `UPDATED`
+  - String: `"updated"`
+  - Used by: `meal.plan.updated`, `meal.rating.updated`
 
 ---
 
@@ -52,11 +80,11 @@ Extended action vocabulary for the `action` component of a signal name. The four
 
 The `domain` component of a signal name, typed as a `str` enum.
 
-| Value | String | Description |
-|---|---|---|
-| `MEAL` | `"meal"` | All meal planning, suggestion, voting, and rating signals. |
+- `MEAL`
+  - String: `"meal"`
+  - Description: All meal planning, suggestion, voting, and rating signals.
 
-Additional domains (`device`, `inventory`, `auth`, `clinical`) are not yet registered in this enum — their signals currently use hardcoded `event_type` strings and have not been migrated to the `SignalBase` metaclass pattern.
+Additional domains (`device`, `inventory`, `auth`, `clinical`) are not yet registered in this enum - their signals currently use hardcoded `event_type` strings and have not been migrated to the `SignalBase` metaclass pattern.
 
 ---
 
@@ -70,24 +98,30 @@ A plain Python class (not a Pydantic model) that establishes the typed naming co
 
 **Class variables** (typed as `ClassVar` for IDE support):
 
-| Name | Type | Description |
-|---|---|---|
-| `visibility` | `str` | Always `'public'` for open-source signals. |
-| `domain` | `SignalDomainType` | The functional area of the signal. |
-| `aggregate` | `str` | The entity or lifecycle concept being described. |
-| `action` | `SignalActionType` | The specific event within the aggregate's lifecycle. |
+- `visibility`
+  - Type: `str`
+  - Description: Always `'public'` for open-source signals.
+- `domain`
+  - Type: `SignalDomainType`
+  - Description: The functional area of the signal.
+- `aggregate`
+  - Type: `str`
+  - Description: The entity or lifecycle concept being described.
+- `action`
+  - Type: `SignalActionType`
+  - Description: The specific event within the aggregate's lifecycle.
 
 **`name` property (read-only, class-level):**
 
 ```python
 PublicMealSuggestionRejectedSignal.name
-# → "public.meal.suggestion.rejected"
+# -> "public.meal.suggestion.rejected"
 
 PublicMealSuggestionRejectedSignal.name = "Bob"
-# → AttributeError: can't set attribute
+# -> AttributeError: can't set attribute
 ```
 
-`name` is implemented as a property on the metaclass. Accessing it on the class returns the composed string. It has no setter, so assignment raises `AttributeError` immediately — no guard code needed.
+`name` is implemented as a property on the metaclass. Accessing it on the class returns the composed string. It has no setter, so assignment raises `AttributeError` immediately - no guard code needed.
 
 **`__init_subclass__` validation:**
 
@@ -98,7 +132,7 @@ class BrokenSignal(SignalBase):
     domain = SignalDomainType.MEAL
     # forgot aggregate and action
 
-# ImportError → TypeError: BrokenSignal must define the following signal component(s): aggregate, action
+# ImportError -> TypeError: BrokenSignal must define the following signal component(s): aggregate, action
 ```
 
 Intermediate abstract bases opt out by passing `abstract=True`:
@@ -126,11 +160,21 @@ All payload and message classes inherit from `SignalPart` through either `Signal
 
 The base class for all inner payload objects. Every domain payload class extends this. It provides three fields that every payload carries regardless of domain:
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Monotonically increasing version tracker. Must be `≥ 1`. Increment when payload fields change in a breaking way. |
-| `observed_at` | `datetime` | No | `utcnow()` | The precise moment the underlying fact was observed at the edge, before any processing. Serialised as ISO 8601 UTC. |
-| `metadata` | `dict[str, Any] \| None` | No | `{}` | Non-PII operational telemetry (e.g. `execution_ms`, `retry_count`, `source_ip`). Never use for business data. |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Monotonically increasing version tracker. Must be `>= 1`. Increment when payload fields change in a breaking way.
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: The precise moment the underlying fact was observed at the edge, before any processing. Serialised as ISO 8601 UTC.
+- `metadata`
+  - Type: `dict[str, Any] | None`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry (e.g. `execution_ms`, `retry_count`, `source_ip`). Never use for business data.
 
 **Serialisation note:** `observed_at` is serialised by a `@field_serializer` that enforces UTC and ISO 8601 format with microsecond precision, regardless of the input timezone.
 
@@ -142,16 +186,46 @@ The base class for all inner payload objects. Every domain payload class extends
 
 The envelope that wraps every payload published to the bus. Enforces multi-tenant isolation via `organization_id` and `workspace_id` on every message.
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `event_id` | `UUID` | No | `uuid4()` | Unique identifier for this specific message instance. |
-| `event_type` | `str` | Yes | — | Dot-notated routing key, e.g. `public.meal.suggestion.requested`. Set by each concrete message class. |
-| `lifecycle_action` | `LifecycleAction` | Yes | — | The canonical state mutation type for the entity in the payload. |
-| `correlation_id` | `UUID` | Yes | — | Cross-service trace identifier. Pass the same value through the full request chain. |
-| `organization_id` | `str` | Yes | — | Corporate tenant boundary key. Present from Phase 1; enforces data isolation at the topic level. |
-| `workspace_id` | `str` | Yes | — | Functional workspace partition key. Present from Phase 1; becomes functionally active in Phase 3. |
-| `actor_id` | `str` | Yes | — | The user, service, or system identity that triggered this event. |
-| `timestamp` | `datetime` | No | `utcnow()` | The moment the message was constructed and dispatched by the publisher. |
+- `event_id`
+  - Type: `UUID`
+  - Required: No
+  - Default: `uuid4()`
+  - Description: Unique identifier for this specific message instance.
+- `event_type`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: Dot-notated routing key, e.g. `public.meal.suggestion.requested`. Set by each concrete message class.
+- `lifecycle_action`
+  - Type: `LifecycleAction`
+  - Required: Yes
+  - Default: none
+  - Description: The canonical state mutation type for the entity in the payload.
+- `correlation_id`
+  - Type: `UUID`
+  - Required: Yes
+  - Default: none
+  - Description: Cross-service trace identifier. Pass the same value through the full request chain.
+- `organization_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: Corporate tenant boundary key. Present from Phase 1; enforces data isolation at the topic level.
+- `workspace_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: Functional workspace partition key. Present from Phase 1; becomes functionally active in Phase 3.
+- `actor_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The user, service, or system identity that triggered this event.
+- `timestamp`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: The moment the message was constructed and dispatched by the publisher.
 
 ---
 

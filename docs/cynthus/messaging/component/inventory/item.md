@@ -17,19 +17,61 @@ An item is a quantity of a product held on a shelf.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `item_id` | `str` | Yes | — | The identifier of the item. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
-| `name` | `str` | Yes | — | The name of the item. |
-| `quantity` | `float` | Yes | — | The quantity on hand. |
-| `unit` | `Optional[str]` | No | `None` | The unit of measure, for example gallon. |
-| `low_threshold` | `Optional[float]` | No | `None` | The quantity below which the item counts as low. |
-| `expiry_date` | `Optional[date]` | No | `None` | The date the item expires. |
-| `barcode` | `Optional[str]` | No | `None` | The barcode of the item. |
-| `catalog_item_id` | `Optional[str]` | No | `None` | The catalog entry the item was matched to. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `item_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the item.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
+- `name`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The name of the item.
+- `quantity`
+  - Type: `float`
+  - Required: Yes
+  - Default: none
+  - Description: The quantity on hand.
+- `unit`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The unit of measure, for example gallon.
+- `low_threshold`
+  - Type: `Optional[float]`
+  - Required: No
+  - Default: `None`
+  - Description: The quantity below which the item counts as low.
+- `expiry_date`
+  - Type: `Optional[date]`
+  - Required: No
+  - Default: `None`
+  - Description: The date the item expires.
+- `barcode`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The barcode of the item.
+- `catalog_item_id`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The catalog entry the item was matched to.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -70,17 +112,51 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `item_id` | `str` | Yes | — | The identifier of the item. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
-| `name` | `Optional[str]` | No | `None` | The new name, when it changed. |
-| `quantity` | `Optional[float]` | No | `None` | The new quantity, when it changed. |
-| `unit` | `Optional[str]` | No | `None` | The new unit, when it changed. |
-| `low_threshold` | `Optional[float]` | No | `None` | The new low threshold, when it changed. |
-| `expiry_date` | `Optional[date]` | No | `None` | The new expiry date, when it changed. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `item_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the item.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
+- `name`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The new name, when it changed.
+- `quantity`
+  - Type: `Optional[float]`
+  - Required: No
+  - Default: `None`
+  - Description: The new quantity, when it changed.
+- `unit`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The new unit, when it changed.
+- `low_threshold`
+  - Type: `Optional[float]`
+  - Required: No
+  - Default: `None`
+  - Description: The new low threshold, when it changed.
+- `expiry_date`
+  - Type: `Optional[date]`
+  - Required: No
+  - Default: `None`
+  - Description: The new expiry date, when it changed.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -119,12 +195,26 @@ Set the envelope `lifecycle_action` to `updated`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `item_id` | `str` | Yes | — | The identifier of the item. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `item_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the item.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
 
 Set the envelope `lifecycle_action` to `deleted`.
 

@@ -17,12 +17,26 @@ An owner is a user who is responsible for a shelf. These facts follow a successf
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `owner_id` | `str` | Yes | — | The identifier of the user. |
-| `granted_by` | `Optional[str]` | No | `None` | The user who granted the ownership. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `owner_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user.
+- `granted_by`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The user who granted the ownership.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -56,11 +70,21 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `owner_id` | `str` | Yes | — | The identifier of the user. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `owner_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user.
 
 Set the envelope `lifecycle_action` to `deleted`.
 

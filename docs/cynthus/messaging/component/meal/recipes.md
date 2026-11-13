@@ -13,19 +13,42 @@ The `recipes` aggregate covers the association of one or more recipe identifiers
 **Emitted by:** `cynthus-core-api`
 **Consumed by:** `cynthus-recipe`, `cynthus-analysis`
 
-**When:** One or more recipe IDs are linked to a composite meal entry. This signal covers the full set of associations at the time of publication — it is not incremental. Consumers should treat it as the authoritative current state of the meal's recipe associations.
+**When:** One or more recipe IDs are linked to a composite meal entry. This signal covers the full set of associations at the time of publication - it is not incremental. Consumers should treat it as the authoritative current state of the meal's recipe associations.
 
-**Note on aggregate naming:** The aggregate is `recipes` (plural) to reflect that this signal always carries a batch — even when only one recipe is being associated.
+**Note on aggregate naming:** The aggregate is `recipes` (plural) to reflect that this signal always carries a batch - even when only one recipe is being associated.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the association was recorded. | `"2026-06-09T19:00:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `meal_id` | `str` | Yes | — | The identifier of the composite meal entry. | `"meal_01HXYZDEF"` |
-| `recipe_ids` | `list[str]` | Yes | — | The identifiers of all recipes currently linked to the meal entry. | `["rcp_01HXYZABC", "rcp_01HXYZDEF"]` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the association was recorded.
+  - Example: `"2026-06-09T19:00:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `meal_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the composite meal entry.
+  - Example: `"meal_01HXYZDEF"`
+- `recipe_ids`
+  - Type: `list[str]`
+  - Required: Yes
+  - Default: none
+  - Description: The identifiers of all recipes currently linked to the meal entry.
+  - Example: `["rcp_01HXYZABC", "rcp_01HXYZDEF"]`
 
 ### Wire example
 
