@@ -17,12 +17,26 @@ A location is a named physical storage space such as a pantry, fridge or freezer
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
-| `name` | `str` | Yes | — | The name of the location. |
-| `type` | `str` | Yes | — | The kind of storage space, for example ambient, fridge or freezer. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
+- `name`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The name of the location.
+- `type`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The kind of storage space, for example ambient, fridge or freezer.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -56,13 +70,31 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
-| `name` | `Optional[str]` | No | `None` | The new name, when it changed. |
-| `type` | `Optional[str]` | No | `None` | The new storage type, when it changed. |
-| `archived` | `Optional[bool]` | No | `None` | Whether the location is now archived, when that changed. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
+- `name`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The new name, when it changed.
+- `type`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The new storage type, when it changed.
+- `archived`
+  - Type: `Optional[bool]`
+  - Required: No
+  - Default: `None`
+  - Description: Whether the location is now archived, when that changed.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -97,10 +129,16 @@ Set the envelope `lifecycle_action` to `updated`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
 
 Set the envelope `lifecycle_action` to `deleted`.
 

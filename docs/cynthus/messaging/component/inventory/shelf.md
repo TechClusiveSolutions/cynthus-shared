@@ -17,13 +17,31 @@ A shelf is a subdivision of a location that holds items and has owners.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
-| `name` | `str` | Yes | — | The name of the shelf. |
-| `position` | `int` | No | `0` | The position of the shelf within its location. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
+- `name`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The name of the shelf.
+- `position`
+  - Type: `int`
+  - Required: No
+  - Default: `0`
+  - Description: The position of the shelf within its location.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -58,13 +76,31 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
-| `name` | `Optional[str]` | No | `None` | The new name, when it changed. |
-| `position` | `Optional[int]` | No | `None` | The new position, when it changed. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
+- `name`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The new name, when it changed.
+- `position`
+  - Type: `Optional[int]`
+  - Required: No
+  - Default: `None`
+  - Description: The new position, when it changed.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -99,11 +135,21 @@ Set the envelope `lifecycle_action` to `updated`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `shelf_id` | `str` | Yes | — | The identifier of the shelf. |
-| `location_id` | `str` | Yes | — | The identifier of the location. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `shelf_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the shelf.
+- `location_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the location.
 
 Set the envelope `lifecycle_action` to `deleted`.
 

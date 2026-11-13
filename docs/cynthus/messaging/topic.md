@@ -11,14 +11,14 @@ Topic classes are typed wrappers around Azure Service Bus topic names. They are 
 
 A Pydantic `BaseModel` wrapping the `cynthus-events-topic` topic name.
 
-| Field | Type | Value |
-|---|---|---|
-| `name` | `str` | `"cynthus-events-topic"` |
+- `name`
+  - Type: `str`
+  - Value: `"cynthus-events-topic"`
 
-**Usage:** Instantiated inside `PublicSubscription.__init__` and passed to the FastStream broker. Services do not interact with this class directly — it is encapsulated by the subscription layer.
+**Usage:** Instantiated inside `PublicSubscription.__init__` and passed to the FastStream broker. Services do not interact with this class directly - it is encapsulated by the subscription layer.
 
 ```python
-# From PublicSubscription — how CoreSignalTopic is used internally
+# From PublicSubscription - how CoreSignalTopic is used internally
 super().__init__(name=name, topic=PublicTopic(), **kwargs)
 ```
 
@@ -28,11 +28,18 @@ super().__init__(name=name, topic=PublicTopic(), **kwargs)
 
 The Cynthus platform uses three Service Bus topics. This package currently only covers `cynthus-events-topic`. The internal and audit topics are defined in the private `cynthus-messaging-internal` wheel.
 
-| Topic | Constant | Publisher | Consumers |
-|---|---|---|---|
-| `cynthus-events-topic` | `CoreSignalTopic` / `PublicTopic` | All open-source Core services | Any authorized service via public subscriptions |
-| `cynthus-topic-internal` | *(private wheel)* | Closed-source Intelligence and Health services | Closed-source services only |
-| `cynthus-topic-audit` | *(private wheel)* | `cynthus-portal-api`, `cynthus-identity`, `cynthus-profile` | `cynthus-audit` (append-only) |
+- `cynthus-events-topic`
+  - Constant: `CoreSignalTopic` / `PublicTopic`
+  - Publisher: All open-source Core services
+  - Consumers: Any authorized service via public subscriptions
+- `cynthus-topic-internal`
+  - Constant: *(private wheel)*
+  - Publisher: Closed-source Intelligence and Health services
+  - Consumers: Closed-source services only
+- `cynthus-topic-audit`
+  - Constant: *(private wheel)*
+  - Publisher: `cynthus-portal-api`, `cynthus-identity`, `cynthus-profile`
+  - Consumers: `cynthus-audit` (append-only)
 
 ---
 

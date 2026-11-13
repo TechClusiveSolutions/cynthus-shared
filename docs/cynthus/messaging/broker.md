@@ -6,11 +6,9 @@ A process publishes and subscribes through the `SignalPublisher` and `SignalSubs
 
 ## Settings
 
-| Variable | Meaning |
-|---|---|
-| `SIGNAL_BROKER` | `servicebus` (the default), `rabbitmq` or `memory`. Blank means `servicebus`. Anything else stops the service at start-up and names the choices. |
-| `SERVICE_BUS_CONNECTION_STRING` | Service Bus only. The emulator connection string. Without it, `SERVICE_BUS_NAMESPACE` and Azure credentials are used. |
-| `RABBITMQ_URL` | RabbitMQ only. `amqp://user:password@host:5672/vhost`. It is a secret: keep it in the untracked `.env`, never in a repository or a log. |
+- `SIGNAL_BROKER`: `servicebus` (the default), `rabbitmq` or `memory`. Blank means `servicebus`. Anything else stops the service at start-up and names the choices.
+- `SERVICE_BUS_CONNECTION_STRING`: Service Bus only. The emulator connection string. Without it, `SERVICE_BUS_NAMESPACE` and Azure credentials are used.
+- `RABBITMQ_URL`: RabbitMQ only. `amqp://user:password@host:5672/vhost`. It is a secret: keep it in the untracked `.env`, never in a repository or a log.
 
 `memory` keeps every signal inside the process (`InMemorySignalBus`). It is for unit tests and local runs of one service.
 
@@ -20,11 +18,9 @@ A process publishes and subscribes through the `SignalPublisher` and `SignalSubs
 
 Service code never names a broker. `ServiceApplication` asks `SignalBroker.from_environment()` (in `cynthus.service`) for the pieces:
 
-| Attribute | What it is |
-|---|---|
-| `publisher` | The process's `SignalPublisher`. It has an `on_unavailable` hook and a `close()`. |
-| `subscriber` | The process's `SignalSubscriber`: `subscribe(topic, subscription, handler)` and `run()`. |
-| `client` | The one connection both share (the Service Bus client, or the `RabbitMqConnection`). |
+- `publisher`: The process's `SignalPublisher`. It has an `on_unavailable` hook and a `close()`.
+- `subscriber`: The process's `SignalSubscriber`: `subscribe(topic, subscription, handler)` and `run()`.
+- `client`: The one connection both share (the Service Bus client, or the `RabbitMqConnection`).
 
 A service that builds its own publisher (the Core API, Auth, the Celery services) should use `SignalBroker` the same way instead of constructing `ServiceBusSignalPublisher` directly.
 
@@ -44,16 +40,14 @@ A service that builds its own publisher (the Core API, Auth, the Celery services
 
 Use RabbitMQ 4.x. Each service declares what it needs when it starts; the declarations are idempotent, so nothing has to be created by hand.
 
-| Service Bus | RabbitMQ |
-|---|---|
-| Topic `cynthus-events-topic` | A durable topic exchange of that name |
-| Event type, for example `audit.identity.user.rejected` | The routing key, and the message's `type` property |
-| Subscription, for example `cynthus-profile-sub` | A durable quorum queue of that name, bound to the exchange with `#` |
-| Complete | Ack |
-| Dead-letter | Reject without requeue, to the direct exchange `cynthus-events-topic.dlx`, which routes to the queue `<subscription>.dlq` |
-| `MaxDeliveryCount` 10 | `x-delivery-limit` 10 |
-| TTL one hour | `x-message-ttl` 3,600,000 ms |
-| Message properties | `message_id`, `correlation_id`, `content_type`, and the `authorization` header |
+- Topic `cynthus-events-topic`: A durable topic exchange of that name
+- Event type, for example `audit.identity.user.rejected`: The routing key, and the message's `type` property
+- Subscription, for example `cynthus-profile-sub`: A durable quorum queue of that name, bound to the exchange with `#`
+- Complete: Ack
+- Dead-letter: Reject without requeue, to the direct exchange `cynthus-events-topic.dlx`, which routes to the queue `<subscription>.dlq`
+- `MaxDeliveryCount` 10: `x-delivery-limit` 10
+- TTL one hour: `x-message-ttl` 3,600,000 ms
+- Message properties: `message_id`, `correlation_id`, `content_type`, and the `authorization` header
 
 To look at a dead letter, open `<subscription>.dlq` in the RabbitMQ management page and get its messages; the `x-death` header says which queue it came from and why.
 

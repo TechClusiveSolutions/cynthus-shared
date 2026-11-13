@@ -8,15 +8,27 @@ Allergies and medical conditions are hard constraints. Before a change to them i
 
 ## Signals
 
-| Signal | Emitted by | Purpose |
-|---|---|---|
-| `public.profile.profile.requested` | `cynthus-core-api` | Hands the request to the Profile service so the caller gets an immediate acknowledgement. |
-| `public.profile.profile.responded` | `cynthus-profile` | Carries the outcome back to `cynthus-core-api`, which relays it to the caller. |
-| `public.profile.profile.created` | `cynthus-profile` | Lets other services know a profile exists. It names which parts were set, not their contents. |
-| `public.profile.profile.updated` | `cynthus-profile` | Lets other services know which parts of a profile changed, without the contents. |
-| `public.profile.profile.deleted` | `cynthus-profile` | Lets other services drop what they hold for the profile. |
-| `public.profile.snapshot.published` | `cynthus-profile` | Pushes the profile (allergies, likes, dislikes, favorites, conditions) to the Analysis engine, which correlates it with shopping and inventory patterns to refine meal suggestions. |
-| `audit.profile.hard_constraint.updated` | `cynthus-profile` | Safety-critical audit record of a hard-constraint change (engineering standards section 6); consumed by `cynthus-audit`. |
+- `public.profile.profile.requested`
+  - Emitted by: `cynthus-core-api`
+  - Purpose: Hands the request to the Profile service so the caller gets an immediate acknowledgement.
+- `public.profile.profile.responded`
+  - Emitted by: `cynthus-profile`
+  - Purpose: Carries the outcome back to `cynthus-core-api`, which relays it to the caller.
+- `public.profile.profile.created`
+  - Emitted by: `cynthus-profile`
+  - Purpose: Lets other services know a profile exists. It names which parts were set, not their contents.
+- `public.profile.profile.updated`
+  - Emitted by: `cynthus-profile`
+  - Purpose: Lets other services know which parts of a profile changed, without the contents.
+- `public.profile.profile.deleted`
+  - Emitted by: `cynthus-profile`
+  - Purpose: Lets other services drop what they hold for the profile.
+- `public.profile.snapshot.published`
+  - Emitted by: `cynthus-profile`
+  - Purpose: Pushes the profile (allergies, likes, dislikes, favorites, conditions) to the Analysis engine, which correlates it with shopping and inventory patterns to refine meal suggestions.
+- `audit.profile.hard_constraint.updated`
+  - Emitted by: `cynthus-profile`
+  - Purpose: Safety-critical audit record of a hard-constraint change (engineering standards section 6); consumed by `cynthus-audit`.
 
 ---
 
@@ -33,12 +45,26 @@ Allergies and medical conditions are hard constraints. Before a change to them i
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `operation` | `Literal['create', 'get', 'update', 'delete']` | Yes | — | What to do: create, get, update or delete. |
-| `resource_id` | `Optional[str]` | No | `None` | The profile to get, update or delete; omitted means the caller's own. |
-| `data` | `Dict[str, Any]` | No | empty | The fields to create or change the profile with. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `operation`
+  - Type: `Literal['create', 'get', 'update', 'delete']`
+  - Required: Yes
+  - Default: none
+  - Description: What to do: create, get, update or delete.
+- `resource_id`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The profile to get, update or delete; omitted means the caller's own.
+- `data`
+  - Type: `Dict[str, Any]`
+  - Required: No
+  - Default: empty
+  - Description: The fields to create or change the profile with.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -57,13 +83,31 @@ Set the envelope `lifecycle_action` to `updated`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `operation` | `str` | Yes | — | The operation that was requested. |
-| `status` | `int` | Yes | — | 200, 201 or 204 when it worked; 401, 403, 404, 409, 422 or 503 when it did not. |
-| `result` | `Optional[Any]` | No | `None` | The profile when it worked. |
-| `error` | `Optional[str]` | No | `None` | Why the request failed. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `operation`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The operation that was requested.
+- `status`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: 200, 201 or 204 when it worked; 401, 403, 404, 409, 422 or 503 when it did not.
+- `result`
+  - Type: `Optional[Any]`
+  - Required: No
+  - Default: `None`
+  - Description: The profile when it worked.
+- `error`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: Why the request failed.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -82,12 +126,26 @@ Set the envelope `lifecycle_action` to `updated`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `profile_id` | `str` | Yes | — | The identifier of the profile. |
-| `user_id` | `str` | Yes | — | The identifier of the user the profile belongs to. |
-| `changed` | `List[str]` | No | empty list | Which parts changed: display_name, allergies, likes, dislikes, favorites or conditions. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `profile_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the profile.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user the profile belongs to.
+- `changed`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: Which parts changed: display_name, allergies, likes, dislikes, favorites or conditions.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -106,12 +164,26 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `profile_id` | `str` | Yes | — | The identifier of the profile. |
-| `user_id` | `str` | Yes | — | The identifier of the user the profile belongs to. |
-| `changed` | `List[str]` | No | empty list | Which parts changed: display_name, allergies, likes, dislikes, favorites or conditions. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `profile_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the profile.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user the profile belongs to.
+- `changed`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: Which parts changed: display_name, allergies, likes, dislikes, favorites or conditions.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -130,12 +202,26 @@ Set the envelope `lifecycle_action` to `updated`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `profile_id` | `str` | Yes | — | The identifier of the profile. |
-| `user_id` | `str` | Yes | — | The identifier of the user the profile belongs to. |
-| `changed` | `List[str]` | No | empty list | Which parts changed: display_name, allergies, likes, dislikes, favorites or conditions. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `profile_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the profile.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user the profile belongs to.
+- `changed`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: Which parts changed: display_name, allergies, likes, dislikes, favorites or conditions.
 
 Set the envelope `lifecycle_action` to `deleted`.
 
@@ -154,12 +240,26 @@ Set the envelope `lifecycle_action` to `deleted`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the user the profile belongs to. |
-| `profile` | `Dict[str, Any]` | Yes | — | The whole profile as the Profile service returns it. |
-| `reason` | `str` | No | `'authentication'` | Why the snapshot was published. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user the profile belongs to.
+- `profile`
+  - Type: `Dict[str, Any]`
+  - Required: Yes
+  - Default: none
+  - Description: The whole profile as the Profile service returns it.
+- `reason`
+  - Type: `str`
+  - Required: No
+  - Default: `'authentication'`
+  - Description: Why the snapshot was published.
 
 Set the envelope `lifecycle_action` to `snapshot`.
 
@@ -178,14 +278,36 @@ Set the envelope `lifecycle_action` to `snapshot`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the user the profile belongs to. |
-| `profile_id` | `str` | Yes | — | The identifier of the profile. |
-| `kind` | `str` | Yes | — | allergy or condition. |
-| `added` | `List[str]` | No | empty list | The entries being added. |
-| `removed` | `List[str]` | No | empty list | The entries being removed. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user the profile belongs to.
+- `profile_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the profile.
+- `kind`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: allergy or condition.
+- `added`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: The entries being added.
+- `removed`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: The entries being removed.
 
 Set the envelope `lifecycle_action` to `updated`.
 
@@ -195,11 +317,17 @@ Set the envelope `lifecycle_action` to `updated`.
 
 A request names an `operation`; `data` is what the Profile service reads.
 
-| Operation | `data` | Answer |
-|---|---|---|
-| `create` | `display_name` and the lists `allergies`, `likes`, `dislikes`, `favorites`, `conditions`; each entry is a name or `{name, detail}` | `201` and the profile; `409` if the user already has one |
-| `get` | none | `200` and the profile; `404` if there is none |
-| `update` | `display_name`, and per list either a replacement list or `{set, add, remove}` | `200` and the profile |
-| `delete` | none | `204` |
+- `create`
+  - `data`: `display_name` and the lists `allergies`, `likes`, `dislikes`, `favorites`, `conditions`; each entry is a name or `{name, detail}`
+  - Answer: `201` and the profile; `409` if the user already has one
+- `get`
+  - `data`: none
+  - Answer: `200` and the profile; `404` if there is none
+- `update`
+  - `data`: `display_name`, and per list either a replacement list or `{set, add, remove}`
+  - Answer: `200` and the profile
+- `delete`
+  - `data`: none
+  - Answer: `204`
 
 Every operation applies to the caller's own profile; a profile is never reached by anyone else. `get` needs `profile:read`, the rest need `profile:write`. Other statuses: `401` (token missing, forged or for another caller), `403` (token lacks the permission), `422` (input rejected), `503` (the audit signal for a hard-constraint change could not be published, so nothing was changed).

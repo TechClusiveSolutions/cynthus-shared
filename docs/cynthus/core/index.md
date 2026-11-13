@@ -17,14 +17,12 @@ The classes that describe the things in Cynthus: who a user is, what a tenant an
 
 ## Packages
 
-| Package | Classes |
-|---|---|
-| `cynthus.core.soft_deletable` | `SoftDeletable`, the base of everything that holds a person's data |
-| `cynthus.core.user` | `User` |
-| `cynthus.core.system` | `System` (fixed identity and the version), `Tenant`, `TenantType`, `Workspace`, `BillingAccount` |
-| `cynthus.core.service` | `Service`, `ServiceDomain`, and one identity per service: `InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService` |
-| `cynthus.core.resource` | `Resource`, `WorkspaceResource`, `Item`, `Place`, `Engagement`, `Attendee`, `StorageLocation`, `StorageShelf`, `ShelfFillOrder` and the join records |
-| `cynthus.core.event` | `Event`, `UserEvent`, `SystemEvent`, `EventRequest`, `EventRequestResponse` and its decision classes |
+- `cynthus.core.soft_deletable`: `SoftDeletable`, the base of everything that holds a person's data
+- `cynthus.core.user`: `User`
+- `cynthus.core.system`: `System` (fixed identity and the version), `Tenant`, `TenantType`, `Workspace`, `BillingAccount`
+- `cynthus.core.service`: `Service`, `ServiceDomain`, and one identity per service: `InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService`
+- `cynthus.core.resource`: `Resource`, `WorkspaceResource`, `Item`, `Place`, `Engagement`, `Attendee`, `StorageLocation`, `StorageShelf`, `ShelfFillOrder` and the join records
+- `cynthus.core.event`: `Event`, `UserEvent`, `SystemEvent`, `EventRequest`, `EventRequestResponse` and its decision classes
 
 ---
 

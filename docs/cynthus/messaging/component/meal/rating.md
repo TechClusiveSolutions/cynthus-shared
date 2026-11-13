@@ -17,15 +17,48 @@ User ratings provide explicit feedback on meals after they are cooked or consume
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the rating was submitted. | `"2026-06-09T20:15:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `rating_id` | `str` | Yes | — | The identifier of the created rating record. | `"rtg_01HXYZABC"` |
-| `meal_id` | `str` | Yes | — | The identifier of the meal that was rated. | `"meal_01HXYZDEF"` |
-| `score` | `int` | Yes | — | The numeric rating score. Typically 1–5. | `4` |
-| `comment` | `str \| None` | No | `None` | An optional free-text comment accompanying the rating. | `"Great flavour, would make again."` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the rating was submitted.
+  - Example: `"2026-06-09T20:15:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `rating_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the created rating record.
+  - Example: `"rtg_01HXYZABC"`
+- `meal_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the meal that was rated.
+  - Example: `"meal_01HXYZDEF"`
+- `score`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: The numeric rating score. Typically 1-5.
+  - Example: `4`
+- `comment`
+  - Type: `str | None`
+  - Required: No
+  - Default: `None`
+  - Description: An optional free-text comment accompanying the rating.
+  - Example: `"Great flavour, would make again."`
 
 ### Wire example
 
@@ -64,19 +97,52 @@ User ratings provide explicit feedback on meals after they are cooked or consume
 
 **When:** A user revises their existing rating (score, comment, or both).
 
-**Note on `comment`:** A `null` comment means the user cleared their previous comment — it is not the same as a rating that was created without one. `cynthus-analysis` should treat this as a deletion of the prior comment text.
+**Note on `comment`:** A `null` comment means the user cleared their previous comment - it is not the same as a rating that was created without one. `cynthus-analysis` should treat this as a deletion of the prior comment text.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the revision was submitted. | `"2026-06-10T08:30:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `rating_id` | `str` | Yes | — | The identifier of the updated rating record. | `"rtg_01HXYZABC"` |
-| `meal_id` | `str` | Yes | — | The identifier of the meal the rating belongs to. | `"meal_01HXYZDEF"` |
-| `score` | `int` | Yes | — | The revised numeric rating score. | `5` |
-| `comment` | `str \| None` | No | `None` | The revised comment. `None` indicates the comment was cleared. | `null` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the revision was submitted.
+  - Example: `"2026-06-10T08:30:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `rating_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the updated rating record.
+  - Example: `"rtg_01HXYZABC"`
+- `meal_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the meal the rating belongs to.
+  - Example: `"meal_01HXYZDEF"`
+- `score`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: The revised numeric rating score.
+  - Example: `5`
+- `comment`
+  - Type: `str | None`
+  - Required: No
+  - Default: `None`
+  - Description: The revised comment. `None` indicates the comment was cleared.
+  - Example: `null`
 
 ### Wire example
 
@@ -119,13 +185,36 @@ User ratings provide explicit feedback on meals after they are cooked or consume
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the rating was removed. | `"2026-06-11T09:00:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `rating_id` | `str` | Yes | — | The identifier of the removed rating. | `"rtg_01HXYZABC"` |
-| `meal_id` | `str` | Yes | — | The identifier of the meal the rating was removed from. | `"meal_01HXYZDEF"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the rating was removed.
+  - Example: `"2026-06-11T09:00:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `rating_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the removed rating.
+  - Example: `"rtg_01HXYZABC"`
+- `meal_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the meal the rating was removed from.
+  - Example: `"meal_01HXYZDEF"`
 
 ### Wire example
 
