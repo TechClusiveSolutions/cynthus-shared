@@ -19,7 +19,7 @@ reference it without "Closes" and leave the issue open. -->
 
 - [ ] One class per module, with a matching unit test module
 - [ ] `ruff check .` passes
-- [ ] `python -m pytest --cov=src --cov-fail-under=75` passes
+- [ ] `python -m pytest --cov=src --cov-branch --cov-report=json` and `python .github/scripts/check_coverage.py` passes
 - [ ] Documentation updated and `markdownlint` passes where behaviour changed
 
 ## Deviations from standards
