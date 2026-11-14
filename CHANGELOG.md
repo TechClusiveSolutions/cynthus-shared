@@ -10,6 +10,8 @@ version and date.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-11-13
+
 - Access token `owner` claim (issue 145; ADR-010): `TokenIssuer.issue` and `issue_token` take `owner` (default false), the verifier reads only a JSON true as ownership, and `TokenClaims.owner` exposes it. Auth sets it only for the owner of the token's tenant, never from roles.
 - Guide to creating a new service (issue 143): `docs/creating-a-service.md`, modelled on the Analysis service, linked from the README and the service index.
 - README follows the standard quick-start structure (issue 141; cynthus#57): Description, Prerequisites, Installation, Minimal configuration, Gotchas, More documentation. The longer sections moved unchanged into `docs/`. `check_markdown.py` now checks the README headings.
