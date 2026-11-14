@@ -2,6 +2,8 @@
 
 The small classes every service that answers requests with signals needs, so each service keeps only what is its own: its models, schemas, services and request handler. The Inventory, Profile and Auth services use them.
 
+To add a service, follow [Creating a new service](../../creating-a-service.md).
+
 ---
 
 ## Classes
