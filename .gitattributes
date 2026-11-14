@@ -1,0 +1,19 @@
+# Unix line endings (LF) in every working copy, whatever the machine setting.
+* text=auto eol=lf
+
+# Windows scripts need CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files are never converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
