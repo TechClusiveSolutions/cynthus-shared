@@ -9,5 +9,9 @@ from .event_request_decision_answer import EventRequestDecisionAnswer
 from .event_request_response import EventRequestResponse
 from .inventory_event import InventoryEvent
 from .inventory_event_request import InventoryEventRequest
+from .inventory_location_created_data import InventoryLocationCreatedData
+from .inventory_location_created_event import InventoryLocationCreatedEvent
+from .inventory_shelf_created_data import InventoryShelfCreatedData
+from .inventory_shelf_created_event import InventoryShelfCreatedEvent
 from .system_event import SystemEvent
 from .user_event import UserEvent

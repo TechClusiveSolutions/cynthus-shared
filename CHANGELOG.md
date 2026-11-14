@@ -10,6 +10,8 @@ version and date.
 
 ## [Unreleased]
 
+- Signal generators (issue 150): `Event.event_type` and `Event.data_model` (typed event data), `InventoryShelfCreatedEvent`, `InventoryLocationCreatedEvent`, `SignalContract`, `SignalGenerator`, the inventory shelf and location generators, `SignalGeneratorRegistry`, `UnknownEventError` and `EventMessagePublisher`, which generates the message of an event and publishes it through any `SignalPublisher`. Guide: `docs/signal-generators.md`.
+
 ## [0.18.0] - 2026-11-13
 
 - Access token `owner` claim (issue 145; ADR-010): `TokenIssuer.issue` and `issue_token` take `owner` (default false), the verifier reads only a JSON true as ownership, and `TokenClaims.owner` exposes it. Auth sets it only for the owner of the token's tenant, never from roles.
