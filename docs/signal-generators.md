@@ -163,6 +163,22 @@ Not verified: that a `resource.`, `user.`, `tenant.`, `workspace.` or `env.` sou
 the generator method really reads the source it declares, that the feature id exists in the Feature Registry, and that
 the payload is equal to what the method builds. The feature test covers the message of each shipped signal.
 
+## Signals that exist
+
+All of them belong to FT-IM-001 and are in `SignalGeneratorRegistry.default()`:
+
+- `InventoryShelfCreatedEvent` gives `public.inventory.shelf.created`
+- `InventoryShelfUpdatedEvent` gives `public.inventory.shelf.updated`
+- `InventoryShelfDeletedEvent` gives `public.inventory.shelf.deleted`
+- `InventoryLocationCreatedEvent` gives `public.inventory.location.created`
+- `InventoryLocationUpdatedEvent` gives `public.inventory.location.updated`
+- `InventoryLocationDeletedEvent` gives `public.inventory.location.deleted`
+
+Update events carry the ids and only the fields that changed. A field that did not change is left out of the event
+data, and arrives in the payload as `None`. A value that is falsy but present, such as `0` or `False`, is a change and
+is kept. An update that changes nothing is refused when the event is created, because it would announce nothing.
+Delete events carry ids only.
+
 ## Example
 
 ```python
