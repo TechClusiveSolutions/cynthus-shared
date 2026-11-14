@@ -19,6 +19,11 @@ def test_a_token_carries_the_identity_and_the_header_names_the_key(issuer, ident
     assert claims['exp'] - claims['iat'] == 60
 
 
+def test_the_owner_claim_is_false_unless_asked_for(issuer, identity):
+    assert jwt.decode(issuer.issue(**identity), options={'verify_signature': False})['owner'] is False
+    assert jwt.decode(issuer.issue(**identity, owner=True), options={'verify_signature': False})['owner'] is True
+
+
 def test_the_jwks_holds_the_public_key_that_verifies_the_token(issuer, identity):
     token = issuer.issue(**identity)
     key = issuer.jwks()['keys'][0]

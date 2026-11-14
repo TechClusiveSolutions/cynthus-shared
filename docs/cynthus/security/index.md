@@ -49,6 +49,7 @@ Services trust the signed access token only (engineering standards, section 4). 
 - `organization_id`, `workspace_id`: The tenant the token is valid for. Required.
 - `roles`: Roles granted to the user, for example `workspace_administrator`.
 - `permissions`: What the token may do, for example `inventory:read` and `inventory:write`.
+- `owner`: `true` only when the subject owns the tenant the token is valid for (ADR-010). Auth sets it from the tenant's `owner_id`, never from the roles, so a token issued to someone else never carries it, whatever role it has. The verifier reads it strictly: only a JSON `true` counts, and a missing claim is `false`. Owner is not a role.
 
 A token that lacks `exp`, `iat`, `sub`, `iss`, `aud`, `organization_id` or `workspace_id` is rejected. Only RS256 is accepted, so an unsigned token or one signed with a shared secret never verifies.
 

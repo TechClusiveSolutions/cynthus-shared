@@ -80,6 +80,8 @@ class TokenVerifier:
                 token_id=payload.get('jti'),
                 roles=payload.get('roles', []),
                 permissions=payload.get('permissions', []),
+                # Only a JSON true counts: a string, a number or a list in the claim is not ownership
+                owner=payload.get('owner') is True,
                 issued_at=payload['iat'],
                 expires_at=payload['exp'],
             )
