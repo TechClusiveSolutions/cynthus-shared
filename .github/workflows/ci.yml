@@ -102,13 +102,13 @@ jobs:
               if [ -d "${dir}test" ]; then
                 echo "=== ${dir} ==="
                 (cd "${dir}" && python -m pytest --cov=src --cov-branch --cov-report=json -q)
-                python .github/scripts/check_coverage.py "${dir}coverage.json" --lines 90 --branches 0
+                python .github/scripts/check_coverage.py "${dir}coverage.json" --lines 90 --branches 80
                 suites=$((suites + 1))
               fi
             done
           elif [ -d test ]; then
             python -m pytest --cov=src --cov-branch --cov-report=json -q
-            python .github/scripts/check_coverage.py coverage.json --lines 90 --branches 0
+            python .github/scripts/check_coverage.py coverage.json --lines 90 --branches 80
             suites=1
           fi
           if [ "$suites" -eq 0 ] && find . -name '*.py' -path '*/src/*' -not -path './.deps/*' | grep -q .; then
