@@ -41,6 +41,8 @@ jobs:
               - ".markdownlint-cli2.jsonc"
               - ".github/workflows/ci.yml"
               - ".github/scripts/check_markdown.py"
+              # The line-ending check covers every file, so docs-lint runs on every change.
+              - "**"
 
   lint:
     needs: changes
@@ -117,6 +119,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check line endings
+        run: python3 .github/scripts/check_line_endings.py
       - name: Check screen-reader rules and links
         run: python3 .github/scripts/check_markdown.py
       - name: Run markdownlint
