@@ -11,6 +11,7 @@ version and date.
 ## [Unreleased]
 
 - Signal generators (issue 150): `Event.event_type` and `Event.data_model` (typed event data), `InventoryShelfCreatedEvent`, `InventoryLocationCreatedEvent`, `SignalContract`, `SignalGenerator`, the inventory shelf and location generators, `SignalGeneratorRegistry`, `UnknownEventError` and `EventMessagePublisher`, which generates the message of an event and publishes it through any `SignalPublisher`. Guide: `docs/signal-generators.md`.
+- Updated and deleted signals for inventory shelves and locations (issue 153): `InventoryShelfUpdatedEvent`, `InventoryShelfDeletedEvent`, `InventoryLocationUpdatedEvent` and `InventoryLocationDeletedEvent` with typed data models (an update that changes nothing is refused), `updated` and `deleted` methods and contracts on the shelf and location generators, and four new pairs in the default `SignalGeneratorRegistry`. Guide: `docs/signal-generators.md`.
 
 ## [0.18.0] - 2026-11-13
 

@@ -54,7 +54,9 @@ class TestBuild:
     def test_contracts_come_from_the_generators(self):
         registry = SignalGeneratorRegistry([Shelf, Location])
 
-        assert set(registry.contracts()) == {SHELF_CONTRACT, LOCATION_CONTRACT}
+        assert set(registry.contracts()) == set(Shelf.contracts) | set(Location.contracts)
+        assert SHELF_CONTRACT in registry.contracts()
+        assert LOCATION_CONTRACT in registry.contracts()
 
     def test_list_is_not_kept_by_reference(self):
         generators = [Shelf]
@@ -202,8 +204,11 @@ class TestDefault:
         assert _resolved(registry.generator_for('InventoryShelfCreatedEvent')) is Shelf
         assert _resolved(registry.generator_for('InventoryLocationCreatedEvent')) is Location
 
-    def test_has_exactly_the_two_contracts(self):
-        assert set(SignalGeneratorRegistry.default().contracts()) == {SHELF_CONTRACT, LOCATION_CONTRACT}
+    def test_has_the_contracts_of_both_generators(self):
+        registry = SignalGeneratorRegistry.default()
+
+        assert set(registry.contracts()) == set(Shelf.contracts) | set(Location.contracts)
+        assert len(registry) == 6
 
     def test_signals_and_reverse_lookup(self):
         registry = SignalGeneratorRegistry.default()
@@ -280,13 +285,20 @@ class TestContainer:
 
     def test_len(self):
         assert len(SignalGeneratorRegistry([])) == 0
-        assert len(SignalGeneratorRegistry([Shelf])) == 1
-        assert len(SignalGeneratorRegistry([Shelf, Location])) == 2
+        assert len(SignalGeneratorRegistry([Shelf])) == 3
+        assert len(SignalGeneratorRegistry([Shelf, Location])) == 6
 
     def test_event_names_are_a_sorted_tuple(self):
         names = SignalGeneratorRegistry([Shelf, Location]).event_names()
 
-        assert names == ('InventoryLocationCreatedEvent', 'InventoryShelfCreatedEvent')
+        assert names == (
+            'InventoryLocationCreatedEvent',
+            'InventoryLocationDeletedEvent',
+            'InventoryLocationUpdatedEvent',
+            'InventoryShelfCreatedEvent',
+            'InventoryShelfDeletedEvent',
+            'InventoryShelfUpdatedEvent',
+        )
         assert isinstance(names, tuple)
 
     def test_contracts_are_sorted_by_event_name(self):

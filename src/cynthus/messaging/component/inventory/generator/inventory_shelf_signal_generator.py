@@ -4,16 +4,18 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from .....core.event import Event, InventoryShelfCreatedData
+from .....core.event import Event, InventoryShelfCreatedData, InventoryShelfDeletedData, InventoryShelfUpdatedData
 from ....common.signal.lifecycle_action import LifecycleAction
 from ....common.signal.public_inventory_shelf_created import PublicInventoryShelfCreatedSignal
+from ....common.signal.public_inventory_shelf_deleted import PublicInventoryShelfDeletedSignal
+from ....common.signal.public_inventory_shelf_updated import PublicInventoryShelfUpdatedSignal
 from ....generator import SignalContract, SignalGenerator
-from ..message import InventoryShelfCreatedMessage
-from ..payload import InventoryShelfCreatedPayload
+from ..message import InventoryShelfCreatedMessage, InventoryShelfDeletedMessage, InventoryShelfUpdatedMessage
+from ..payload import InventoryShelfCreatedPayload, InventoryShelfDeletedPayload, InventoryShelfUpdatedPayload
 
 
 class InventoryShelfSignalGenerator(SignalGenerator):
-    """Generates the signals of an inventory shelf: ``public.inventory.shelf.created``"""
+    """Generates the created, updated and deleted signals of an inventory shelf"""
 
     contracts: ClassVar[tuple[SignalContract, ...]] = (
         SignalContract(
@@ -31,6 +33,34 @@ class InventoryShelfSignalGenerator(SignalGenerator):
                 'position': 'data.position',
             },
         ),
+        SignalContract(
+            features=('FT-IM-001',),
+            event='InventoryShelfUpdatedEvent',
+            signal=PublicInventoryShelfUpdatedSignal,
+            message=InventoryShelfUpdatedMessage,
+            payload=InventoryShelfUpdatedPayload,
+            lifecycle_action=LifecycleAction.UPDATED,
+            method='updated',
+            sources={
+                'shelf_id': 'data.shelf_id',
+                'location_id': 'data.location_id',
+                'name': 'data.name',
+                'position': 'data.position',
+            },
+        ),
+        SignalContract(
+            features=('FT-IM-001',),
+            event='InventoryShelfDeletedEvent',
+            signal=PublicInventoryShelfDeletedSignal,
+            message=InventoryShelfDeletedMessage,
+            payload=InventoryShelfDeletedPayload,
+            lifecycle_action=LifecycleAction.DELETED,
+            method='deleted',
+            sources={
+                'shelf_id': 'data.shelf_id',
+                'location_id': 'data.location_id',
+            },
+        ),
     )
 
     def created(self, event: Event) -> InventoryShelfCreatedMessage:
@@ -44,6 +74,32 @@ class InventoryShelfSignalGenerator(SignalGenerator):
             name=data.name,
             position=data.position,
             observed_at=event.occurred_on,
+        )
+
+        return contract.message(**self.envelope(event, contract), payload=payload)
+
+    def updated(self, event: Event) -> InventoryShelfUpdatedMessage:
+        """The message for an updated shelf, from the data of the event"""
+
+        contract = self.contract('updated')
+        data = InventoryShelfUpdatedData.model_validate(event.data)
+        payload = InventoryShelfUpdatedPayload(
+            shelf_id=data.shelf_id,
+            location_id=data.location_id,
+            name=data.name,
+            position=data.position,
+            observed_at=event.occurred_on,
+        )
+
+        return contract.message(**self.envelope(event, contract), payload=payload)
+
+    def deleted(self, event: Event) -> InventoryShelfDeletedMessage:
+        """The message for a deleted shelf, from the data of the event"""
+
+        contract = self.contract('deleted')
+        data = InventoryShelfDeletedData.model_validate(event.data)
+        payload = InventoryShelfDeletedPayload(
+            shelf_id=data.shelf_id, location_id=data.location_id, observed_at=event.occurred_on
         )
 
         return contract.message(**self.envelope(event, contract), payload=payload)
