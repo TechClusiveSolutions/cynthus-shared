@@ -1,0 +1,5 @@
+# Commits that only changed line endings. GitHub skips them in blame; locally use
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Normalize line endings to LF (#155)
+1c8c78964ccc21a2eff20bf5daa86d274afcd9a0
