@@ -20,6 +20,7 @@ class TokenClaims(BaseModel):
     token_id: Optional[str] = Field(default=None, description='The identifier of the token (the `jti` claim)')
     roles: List[str] = Field(default_factory=list, description='Roles granted to the user')
     permissions: List[str] = Field(default_factory=list, description='Permissions such as inventory:read')
+    owner: bool = Field(default=False, description='True when the subject owns the tenant of the token (ADR-010)')
     issued_at: int = Field(description='Seconds since the epoch when the token was issued')
     expires_at: int = Field(description='Seconds since the epoch when the token stops being valid')
 
