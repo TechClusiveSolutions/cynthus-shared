@@ -7,7 +7,9 @@ The rules, each reported with file and line:
 * Unix line endings, no trailing spaces (two spaces for a line break are allowed) and a final newline;
 * every fenced code block names its language (use ``text`` for plain output);
 * the file is named ``README.md``, not ``READMe.md`` or ``readme.md``;
-* relative links point at a file that exists, and a ``#fragment`` points at a heading that exists.
+* relative links point at a file that exists, and a ``#fragment`` points at a heading that exists;
+* the README.md at the root has one level 1 heading (the name) followed by exactly the level 2 headings in
+  ``README_SECTIONS``, in that order (a section with nothing to say states so in one line).
 
 Run it from the repository root: ``python3 .github/scripts/check_markdown.py``. It exits 1 when anything is reported.
 """
@@ -23,6 +25,8 @@ ROW = re.compile(r'^\s*\|.*\|\s*$')
 SEPARATOR = re.compile(r'^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$')
 HEADING = re.compile(r'^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$')
 LINK = re.compile(r'(?<!!)\[(?:[^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+README_SECTIONS = ['Description', 'Prerequisites', 'Installation', 'Minimal configuration', 'Gotchas',
+                   'More documentation']
 SCHEME = re.compile(r'^[a-zA-Z][a-zA-Z0-9+.-]*:')
 
 
@@ -63,6 +67,33 @@ def headings(path: Path) -> set[str]:
     return anchors
 
 
+def readme_structure(path: Path, name: str) -> list[str]:
+    outline: list[tuple[int, str, int]] = []
+    fence = False
+
+    for number, line in enumerate(path.read_text(encoding='utf-8', errors='replace').split(chr(10)), 1):
+        if FENCE.match(line):
+            fence = not fence
+
+        match = None if fence else HEADING.match(line)
+
+        if match and len(match.group(1)) <= 2:
+            outline.append((len(match.group(1)), match.group(2), number))
+
+    problems: list[str] = []
+    titles = [o for o in outline if o[0] == 1]
+    sections = [o[1] for o in outline if o[0] == 2]
+
+    if len(titles) != 1 or outline[0][0] != 1:
+        problems.append(f'{name}: start with one level 1 heading (the name of the repository) and use no other')
+
+    if sections != README_SECTIONS:
+        problems.append(f'{name}: the level 2 headings must be exactly, in order: {", ".join(README_SECTIONS)} '
+                        f'(found: {", ".join(sections) or "none"})')
+
+    return problems
+
+
 def check(path: Path, root: Path) -> list[str]:
     problems: list[str] = []
     name = path.relative_to(root).as_posix()
@@ -70,6 +101,9 @@ def check(path: Path, root: Path) -> list[str]:
 
     if path.name.lower() == 'readme.md' and path.name != 'README.md':
         problems.append(f'{name}: name the file README.md')
+
+    if path == root / 'README.md':
+        problems.extend(readme_structure(path, name))
 
     if b'\r' in raw:
         problems.append(f'{name}: has CR line endings (use LF)')
