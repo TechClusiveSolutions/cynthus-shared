@@ -1,3 +1,4 @@
+from .event_message_publisher import EventMessagePublisher
 from .rabbitmq_signal_publisher import RabbitMqSignalPublisher
 from .service_bus_signal_publisher import ServiceBusSignalPublisher
 from .signal_bus_unavailable import SignalBusUnavailable
