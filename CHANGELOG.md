@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- Guide to creating a new service (issue 143): `docs/creating-a-service.md`, modelled on the Analysis service, linked from the README and the service index.
 - README follows the standard quick-start structure (issue 141; cynthus#57): Description, Prerequisites, Installation, Minimal configuration, Gotchas, More documentation. The longer sections moved unchanged into `docs/`. `check_markdown.py` now checks the README headings.
 - Documentation for screen readers (issue 139): Markdown is ASCII only, has no tables (lists instead), names the language of every code block, and `README.md` has the standard name. `.github/scripts/check_markdown.py` now enforces this, and checks that relative links resolve, in the `docs-lint` job; markdownlint covers every Markdown file. The message documentation's tree diagrams became lists; the field tables became nested lists.
 
