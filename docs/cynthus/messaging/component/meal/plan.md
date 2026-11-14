@@ -17,17 +17,60 @@ A **meal plan** is a workspace-scoped schedule of meals across a defined horizon
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the plan was created. | `"2026-06-09T09:00:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `plan_id` | `str` | Yes | — | The identifier of the created meal plan. | `"plan_01HXYZABC"` |
-| `horizon` | `str` | Yes | — | The planning horizon. | `"week"` or `"month"` |
-| `start_date` | `date` | Yes | — | The first date covered by the plan (ISO 8601). | `"2026-06-09"` |
-| `end_date` | `date` | Yes | — | The last date covered by the plan (ISO 8601). | `"2026-06-15"` |
-| `meal_count` | `int` | Yes | — | The number of meals scheduled within the plan. | `14` |
-| `astri_assisted` | `bool` | Yes | — | Whether Astri assisted in assembling the plan. | `true` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the plan was created.
+  - Example: `"2026-06-09T09:00:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `plan_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the created meal plan.
+  - Example: `"plan_01HXYZABC"`
+- `horizon`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The planning horizon.
+  - Example: `"week"` or `"month"`
+- `start_date`
+  - Type: `date`
+  - Required: Yes
+  - Default: none
+  - Description: The first date covered by the plan (ISO 8601).
+  - Example: `"2026-06-09"`
+- `end_date`
+  - Type: `date`
+  - Required: Yes
+  - Default: none
+  - Description: The last date covered by the plan (ISO 8601).
+  - Example: `"2026-06-15"`
+- `meal_count`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: The number of meals scheduled within the plan.
+  - Example: `14`
+- `astri_assisted`
+  - Type: `bool`
+  - Required: Yes
+  - Default: none
+  - Description: Whether Astri assisted in assembling the plan.
+  - Example: `true`
 
 ### Wire example
 
@@ -70,13 +113,36 @@ A **meal plan** is a workspace-scoped schedule of meals across a defined horizon
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the update occurred. | `"2026-06-10T11:15:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `plan_id` | `str` | Yes | — | The identifier of the modified meal plan. | `"plan_01HXYZABC"` |
-| `updated_fields` | `list[str]` | Yes | — | The names of the plan attributes that changed. Consumers use this to decide whether to invalidate cached state. | `["meal_count", "end_date"]` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the update occurred.
+  - Example: `"2026-06-10T11:15:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `plan_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the modified meal plan.
+  - Example: `"plan_01HXYZABC"`
+- `updated_fields`
+  - Type: `list[str]`
+  - Required: Yes
+  - Default: none
+  - Description: The names of the plan attributes that changed. Consumers use this to decide whether to invalidate cached state.
+  - Example: `["meal_count", "end_date"]`
 
 ### Wire example
 
@@ -117,12 +183,30 @@ A **meal plan** is a workspace-scoped schedule of meals across a defined horizon
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description | Example |
-|---|---|---|---|---|---|
-| `schema_version` | `int` | Yes | — | Payload schema version. | `1` |
-| `observed_at` | `datetime` | No | `utcnow()` | Moment the deletion occurred. | `"2026-06-11T08:00:00.000000+00:00"` |
-| `metadata` | `dict` | No | `{}` | Non-PII operational telemetry. | `{}` |
-| `plan_id` | `str` | Yes | — | The identifier of the removed meal plan. | `"plan_01HXYZABC"` |
+- `schema_version`
+  - Type: `int`
+  - Required: Yes
+  - Default: none
+  - Description: Payload schema version.
+  - Example: `1`
+- `observed_at`
+  - Type: `datetime`
+  - Required: No
+  - Default: `utcnow()`
+  - Description: Moment the deletion occurred.
+  - Example: `"2026-06-11T08:00:00.000000+00:00"`
+- `metadata`
+  - Type: `dict`
+  - Required: No
+  - Default: `{}`
+  - Description: Non-PII operational telemetry.
+  - Example: `{}`
+- `plan_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the removed meal plan.
+  - Example: `"plan_01HXYZABC"`
 
 ### Wire example
 

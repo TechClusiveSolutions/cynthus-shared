@@ -17,14 +17,36 @@ An access decision is made each time a service checks a caller token against the
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the user. |
-| `token_id` | `Optional[str]` | No | `None` | The identifier of the access token (its jti claim), when it had one. |
-| `permission` | `str` | Yes | — | The permission the request needed. |
-| `resource` | `str` | Yes | — | The path of the resource that was requested. |
-| `method` | `str` | Yes | — | The HTTP method of the request. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user.
+- `token_id`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The identifier of the access token (its jti claim), when it had one.
+- `permission`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The permission the request needed.
+- `resource`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The path of the resource that was requested.
+- `method`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The HTTP method of the request.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -43,12 +65,26 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `reason` | `str` | Yes | — | Why the token was not accepted. |
-| `resource` | `str` | Yes | — | The path of the resource that was requested. |
-| `method` | `str` | Yes | — | The HTTP method of the request. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `reason`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: Why the token was not accepted.
+- `resource`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The path of the resource that was requested.
+- `method`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The HTTP method of the request.
 
 Set the envelope `lifecycle_action` to `created`.
 
@@ -67,15 +103,45 @@ Set the envelope `lifecycle_action` to `created`.
 
 ### Payload fields
 
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `schema_version` | `int` | No | `1` | Payload schema version. |
-| `user_id` | `str` | Yes | — | The identifier of the user. |
-| `token_id` | `Optional[str]` | No | `None` | The identifier of the access token (its jti claim), when it had one. |
-| `required_permission` | `str` | Yes | — | The permission the request needed. |
-| `granted_permissions` | `List[str]` | No | empty list | The permissions the token carried. |
-| `roles` | `List[str]` | No | empty list | The roles the token carried. |
-| `resource` | `str` | Yes | — | The path of the resource that was requested. |
-| `method` | `str` | Yes | — | The HTTP method of the request. |
+- `schema_version`
+  - Type: `int`
+  - Required: No
+  - Default: `1`
+  - Description: Payload schema version.
+- `user_id`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The identifier of the user.
+- `token_id`
+  - Type: `Optional[str]`
+  - Required: No
+  - Default: `None`
+  - Description: The identifier of the access token (its jti claim), when it had one.
+- `required_permission`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The permission the request needed.
+- `granted_permissions`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: The permissions the token carried.
+- `roles`
+  - Type: `List[str]`
+  - Required: No
+  - Default: empty list
+  - Description: The roles the token carried.
+- `resource`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The path of the resource that was requested.
+- `method`
+  - Type: `str`
+  - Required: Yes
+  - Default: none
+  - Description: The HTTP method of the request.
 
 Set the envelope `lifecycle_action` to `created`.

@@ -10,7 +10,7 @@ A subscription class's only responsibility is to declare the correct queue name 
 
 **Module:** `cynthus.messaging.subscription.public_subscription`
 
-The abstract base for all public-topic subscriptions. Not used directly — subclass it for each consuming service.
+The abstract base for all public-topic subscriptions. Not used directly - subclass it for each consuming service.
 
 ```python
 class PublicSubscription(AzureServiceBusSubscription):
@@ -24,23 +24,66 @@ class PublicSubscription(AzureServiceBusSubscription):
 
 ## Concrete subscription classes
 
-| Class | Module | Queue name | Consuming service |
-|---|---|---|---|
-| `AnalysisPublicSubscription` | `subscription.analysis_public_subscription` | `cynthus-analysis-public-sub` | `cynthus-analysis` |
-| `AuditPublicSubscription` | `subscription.audit_public_subscription` | `cynthus-audit-public-sub` | `cynthus-audit` |
-| `BillingApiPublicSubscription` | `subscription.billing_api_public_subscription` | *(see source)* | `cynthus-billing-api` |
-| `ChatPublicSubscription` | `subscription.chat_public_subscription` | `cynthus-chat-public-sub` | `cynthus-chat` |
-| `CoreApiSignalSubscription` | `subscription.core_api_signal_subscription` | `cynthus-sub-core-api` | `cynthus-core-api` |
-| `CoreCachePublicSubscription` | `subscription.core_cache_public_subscription` | *(see source)* | `cynthus-core-cache` |
-| `HealthApiPublicSubscription` | `subscription.health_api_public_subscription` | *(see source)* | `cynthus-health-api` |
-| `IdentityPublicSubscription` | `subscription.identity_public_subscription` | *(see source)* | `cynthus-identity` |
-| `MessagingPublicSubscription` | `subscription.messaging_public_subscription` | *(see source)* | `cynthus-messaging` |
-| `NotificationPublicSubscription` | `subscription.notification_public_subscription` | *(see source)* | `cynthus-notification` |
-| `PartnerApiPublicSubscription` | `subscription.partner_api_public_subscription` | *(see source)* | `cynthus-partner-api` |
-| `ProfilePublicSubscription` | `subscription.profile_public_subscription` | `cynthus-profile-public-sub` | `cynthus-profile` |
-| `RecipePublicSubscription` | `subscription.recipe_public_subscription` | `cynthus-recipe-public-sub` | `cynthus-recipe` |
-| `SchedulerPublicSubscription` | `subscription.scheduler_public_subscription` | *(see source)* | `cynthus-scheduler` |
-| `ShoppingPublicSubscription` | `subscription.shopping_public_subscription` | *(see source)* | `cynthus-shopping` |
+- `AnalysisPublicSubscription`
+  - Module: `subscription.analysis_public_subscription`
+  - Queue name: `cynthus-analysis-public-sub`
+  - Consuming service: `cynthus-analysis`
+- `AuditPublicSubscription`
+  - Module: `subscription.audit_public_subscription`
+  - Queue name: `cynthus-audit-public-sub`
+  - Consuming service: `cynthus-audit`
+- `BillingApiPublicSubscription`
+  - Module: `subscription.billing_api_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-billing-api`
+- `ChatPublicSubscription`
+  - Module: `subscription.chat_public_subscription`
+  - Queue name: `cynthus-chat-public-sub`
+  - Consuming service: `cynthus-chat`
+- `CoreApiSignalSubscription`
+  - Module: `subscription.core_api_signal_subscription`
+  - Queue name: `cynthus-sub-core-api`
+  - Consuming service: `cynthus-core-api`
+- `CoreCachePublicSubscription`
+  - Module: `subscription.core_cache_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-core-cache`
+- `HealthApiPublicSubscription`
+  - Module: `subscription.health_api_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-health-api`
+- `IdentityPublicSubscription`
+  - Module: `subscription.identity_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-identity`
+- `MessagingPublicSubscription`
+  - Module: `subscription.messaging_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-messaging`
+- `NotificationPublicSubscription`
+  - Module: `subscription.notification_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-notification`
+- `PartnerApiPublicSubscription`
+  - Module: `subscription.partner_api_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-partner-api`
+- `ProfilePublicSubscription`
+  - Module: `subscription.profile_public_subscription`
+  - Queue name: `cynthus-profile-public-sub`
+  - Consuming service: `cynthus-profile`
+- `RecipePublicSubscription`
+  - Module: `subscription.recipe_public_subscription`
+  - Queue name: `cynthus-recipe-public-sub`
+  - Consuming service: `cynthus-recipe`
+- `SchedulerPublicSubscription`
+  - Module: `subscription.scheduler_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-scheduler`
+- `ShoppingPublicSubscription`
+  - Module: `subscription.shopping_public_subscription`
+  - Queue name: *(see source)*
+  - Consuming service: `cynthus-shopping`
 
 > Several subscription classes are stubs with queue names not yet populated. These are tracked for completion as services are implemented.
 

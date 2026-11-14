@@ -19,6 +19,22 @@ def test_a_valid_token_gives_its_claims(verifier, issuer, identity):
     assert claims.expires_at > claims.issued_at
 
 
+def test_a_token_is_not_owned_unless_the_owner_claim_is_true(verifier, issuer, private_pem, identity):
+    assert verifier.verify_sync(issuer.issue(**identity)).owner is False
+    assert verifier.verify_sync(issuer.issue(**identity, owner=True)).owner is True
+
+
+@pytest.mark.parametrize('value', ['true', 1, ['x'], None])
+def test_only_a_json_true_counts_as_owner(verifier, private_pem, identity, value):
+    token = jwt.encode(
+        {'iss': 'cynthus-auth', 'aud': 'cynthus', 'sub': str(identity['subject']), 'iat': int(time.time()),
+         'exp': int(time.time()) + 60, 'organization_id': str(identity['organization_id']),
+         'workspace_id': str(identity['workspace_id']), 'owner': value},
+        private_pem, algorithm='RS256')
+
+    assert verifier.verify_sync(token).owner is False
+
+
 @pytest.mark.asyncio
 async def test_verify_can_be_awaited(verifier, issuer, identity):
     assert (await verifier.verify(issuer.issue(**identity))).subject == identity['subject']

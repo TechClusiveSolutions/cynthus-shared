@@ -6,13 +6,21 @@ The `inventory` domain covers storage locations, the shelves within them, and th
 
 ## Aggregates
 
-| Aggregate | Signal prefix | Description |
-|---|---|---|
-| `list` | `public.inventory.list.*` | Request and reply for an inventory listing. |
-| `location` | `public.inventory.location.*` | A location is a named physical storage space such as a pantry, fridge or freezer. |
-| `shelf` | `public.inventory.shelf.*` | A shelf is a subdivision of a location that holds items and has owners. |
-| `item` | `public.inventory.item.*` | An item is a quantity of a product held on a shelf. |
-| `owner` | `public.inventory.owner.*` | An owner is a user who is responsible for a shelf. |
+- `list`
+  - Signal prefix: `public.inventory.list.*`
+  - Description: Request and reply for an inventory listing.
+- `location`
+  - Signal prefix: `public.inventory.location.*`
+  - Description: A location is a named physical storage space such as a pantry, fridge or freezer.
+- `shelf`
+  - Signal prefix: `public.inventory.shelf.*`
+  - Description: A shelf is a subdivision of a location that holds items and has owners.
+- `item`
+  - Signal prefix: `public.inventory.item.*`
+  - Description: An item is a quantity of a product held on a shelf.
+- `owner`
+  - Signal prefix: `public.inventory.owner.*`
+  - Description: An owner is a user who is responsible for a shelf.
 
 Asking the Inventory service to create, get, list, update or delete these records is done with the request and response signals described in [request.md](request.md).
 

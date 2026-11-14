@@ -39,8 +39,9 @@ class TokenIssuer:
         workspace_id: UUID,
         roles: Iterable[str] = (),
         permissions: Iterable[str] = (),
+        owner: bool = False,
     ) -> str:
-        return self.issue_token(subject, organization_id, workspace_id, roles, permissions).token
+        return self.issue_token(subject, organization_id, workspace_id, roles, permissions, owner).token
 
     def issue_token(
         self,
@@ -49,6 +50,7 @@ class TokenIssuer:
         workspace_id: UUID,
         roles: Iterable[str] = (),
         permissions: Iterable[str] = (),
+        owner: bool = False,
     ) -> IssuedToken:
         issued_at = int(time.time())
         token_id = str(uuid4())
@@ -65,6 +67,8 @@ class TokenIssuer:
             'workspace_id': str(workspace_id),
             'roles': list(roles),
             'permissions': list(permissions),
+            # True only when the subject owns the tenant of the token (ADR-010); never derived from roles
+            'owner': owner is True,
         }
 
         token = jwt.encode(claims, self._private_key, algorithm=ALGORITHM, headers={'kid': self.key_id})
