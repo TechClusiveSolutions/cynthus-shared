@@ -11,6 +11,8 @@ version and date.
 ## [Unreleased]
 
 - Strict event data (issue 166): the six inventory event data models reject unknown keys, so a misspelled change key fails when the event is created instead of reaching the signal as unchanged.
+- Atomic registration (issue 165): `SignalGeneratorRegistry.register` checks every contract before it stores any, so a refused generator leaves the registry unchanged.
+- Concrete events from services (issue 164): `Service.build_event` takes `event_class`, so a service can build `InventoryShelfCreatedEvent` and similar events that have a signal generator.
 - Coverage gate (issue 158): CI runs the tests with `--cov-branch` and `.github/scripts/check_coverage.py` checks 90 percent of lines and 80 percent of branches separately.
 - Unix line endings (issue 155): `.gitattributes` (`* text=auto eol=lf`), `.editorconfig`, every text file committed with LF, and a CI check (`.github/scripts/check_line_endings.py`) that rejects CRLF.
 - Signal generators (issue 150): `Event.event_type` and `Event.data_model` (typed event data), `InventoryShelfCreatedEvent`, `InventoryLocationCreatedEvent`, `SignalContract`, `SignalGenerator`, the inventory shelf and location generators, `SignalGeneratorRegistry`, `UnknownEventError` and `EventMessagePublisher`, which generates the message of an event and publishes it through any `SignalPublisher`. Guide: `docs/signal-generators.md`.
