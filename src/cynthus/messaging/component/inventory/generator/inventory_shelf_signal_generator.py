@@ -67,7 +67,7 @@ class InventoryShelfSignalGenerator(SignalGenerator):
         """The message for a created shelf, from the data of the event"""
 
         contract = self.contract('created')
-        data = InventoryShelfCreatedData.model_validate(event.data)
+        data = event.parsed_data(InventoryShelfCreatedData)
         payload = InventoryShelfCreatedPayload(
             shelf_id=data.shelf_id,
             location_id=data.location_id,
@@ -82,7 +82,7 @@ class InventoryShelfSignalGenerator(SignalGenerator):
         """The message for an updated shelf, from the data of the event"""
 
         contract = self.contract('updated')
-        data = InventoryShelfUpdatedData.model_validate(event.data)
+        data = event.parsed_data(InventoryShelfUpdatedData)
         payload = InventoryShelfUpdatedPayload(
             shelf_id=data.shelf_id,
             location_id=data.location_id,
@@ -97,7 +97,7 @@ class InventoryShelfSignalGenerator(SignalGenerator):
         """The message for a deleted shelf, from the data of the event"""
 
         contract = self.contract('deleted')
-        data = InventoryShelfDeletedData.model_validate(event.data)
+        data = event.parsed_data(InventoryShelfDeletedData)
         payload = InventoryShelfDeletedPayload(
             shelf_id=data.shelf_id, location_id=data.location_id, observed_at=event.occurred_on
         )
