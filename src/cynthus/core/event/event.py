@@ -4,14 +4,16 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timezone
-from typing import Any, ClassVar
+from typing import Any, ClassVar, TypeVar
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, PrivateAttr, model_validator
 
 from ..resource import Resource
 from ..system import Tenant, Workspace
 from .event_action import EventAction
+
+ModelT = TypeVar('ModelT', bound=BaseModel)
 
 
 class Event(BaseModel):
@@ -29,14 +31,29 @@ class Event(BaseModel):
 
     data_model: ClassVar[type[BaseModel] | None] = None
 
+    _parsed_data: BaseModel | None = PrivateAttr(default=None)
+
     @model_validator(mode='after')
     def _validate_data(self) -> Event:
         """Check ``data`` against ``data_model`` when the event class declares one"""
 
         if self.data_model is not None:
-            self.data_model.model_validate(self.data)
+            self._parsed_data = self.data_model.model_validate(self.data)
 
         return self
+
+    def parsed_data(self, model: type[ModelT]) -> ModelT:
+        """
+            ``data`` as ``model``
+
+            Returns the model parsed when the event was created if it is an instance of ``model``, so typed data is
+            parsed once; otherwise validates ``data`` against ``model``. Do not change ``data`` after creation.
+        """
+
+        if isinstance(self._parsed_data, model):
+            return self._parsed_data
+
+        return model.model_validate(self.data)
 
     @property
     def event_type(self) -> str:

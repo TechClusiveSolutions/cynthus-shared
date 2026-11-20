@@ -148,3 +148,42 @@ class TestDataModel:
     def test_data_model_is_not_a_model_field(self):
         assert 'data_model' not in Event.model_fields
         assert 'data_model' not in _TypedEvent.model_fields
+
+    def test_parsed_data_returns_the_model_parsed_at_creation(self):
+        event = self._make(_TypedEvent, {'name': 'soup', 'servings': 4})
+
+        assert event.parsed_data(_Meal) is event.parsed_data(_Meal)
+        assert event.parsed_data(_Meal).servings == 4
+
+    def test_parsed_data_parses_once(self, monkeypatch):
+        calls = []
+        original = _Meal.model_validate.__func__
+
+        def counting(cls, *args, **kwargs):
+            calls.append(1)
+
+            return original(cls, *args, **kwargs)
+
+        monkeypatch.setattr(_Meal, 'model_validate', classmethod(counting))
+        event = self._make(_TypedEvent, {'name': 'soup'})
+        event.parsed_data(_Meal)
+        event.parsed_data(_Meal)
+
+        assert len(calls) == 1
+
+    def test_parsed_data_validates_for_an_untyped_event(self):
+        event = self._make(Event, {'name': 'soup'})
+
+        assert event.parsed_data(_Meal).name == 'soup'
+
+    def test_parsed_data_validates_for_a_model_other_than_the_declared_one(self):
+        class _Name(BaseModel):
+            name: str
+
+        event = self._make(_TypedEvent, {'name': 'soup'})
+
+        assert event.parsed_data(_Name).name == 'soup'
+
+    def test_parsed_data_refuses_invalid_data_for_the_model(self):
+        with pytest.raises(ValidationError):
+            self._make(Event, {}).parsed_data(_Meal)

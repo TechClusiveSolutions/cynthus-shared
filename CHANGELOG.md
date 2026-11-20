@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- Single parse of event data (issue 167): `Event.parsed_data(model)` returns the model parsed at creation when it matches, and the inventory generators use it, so a typed event is validated once.
 - Strict event data (issue 166): the six inventory event data models reject unknown keys, so a misspelled change key fails when the event is created instead of reaching the signal as unchanged.
 - Atomic registration (issue 165): `SignalGeneratorRegistry.register` checks every contract before it stores any, so a refused generator leaves the registry unchanged.
 - Concrete events from services (issue 164): `Service.build_event` takes `event_class`, so a service can build `InventoryShelfCreatedEvent` and similar events that have a signal generator.

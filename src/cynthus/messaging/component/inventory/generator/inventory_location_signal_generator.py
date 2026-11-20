@@ -70,7 +70,7 @@ class InventoryLocationSignalGenerator(SignalGenerator):
         """The message for a created location, from the data of the event"""
 
         contract = self.contract('created')
-        data = InventoryLocationCreatedData.model_validate(event.data)
+        data = event.parsed_data(InventoryLocationCreatedData)
         payload = InventoryLocationCreatedPayload(
             location_id=data.location_id, name=data.name, type=data.type, observed_at=event.occurred_on
         )
@@ -81,7 +81,7 @@ class InventoryLocationSignalGenerator(SignalGenerator):
         """The message for an updated location, from the data of the event"""
 
         contract = self.contract('updated')
-        data = InventoryLocationUpdatedData.model_validate(event.data)
+        data = event.parsed_data(InventoryLocationUpdatedData)
         payload = InventoryLocationUpdatedPayload(
             location_id=data.location_id,
             name=data.name,
@@ -96,7 +96,7 @@ class InventoryLocationSignalGenerator(SignalGenerator):
         """The message for a deleted location, from the data of the event"""
 
         contract = self.contract('deleted')
-        data = InventoryLocationDeletedData.model_validate(event.data)
+        data = event.parsed_data(InventoryLocationDeletedData)
         payload = InventoryLocationDeletedPayload(
             location_id=data.location_id, observed_at=event.occurred_on
         )
