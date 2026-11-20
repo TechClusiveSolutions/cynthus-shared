@@ -15,6 +15,7 @@ from cynthus.core.event import (
     InventoryShelfUpdatedEvent,
 )
 from cynthus.core.resource import StorageLocation
+from cynthus.core.service import InventoryService
 from cynthus.core.system import Tenant, Workspace
 from cynthus.core.user import User
 from cynthus.messaging.common.signal.lifecycle_action import LifecycleAction
@@ -163,3 +164,16 @@ async def test_updated_and_deleted_events_reach_publish_as_the_whole_message(
 
     for field, value in payload.items():
         assert getattr(message.payload, field) == value
+
+
+async def test_an_event_built_by_the_inventory_service_reaches_publish():
+    transport = Recording()
+    event, user, tenant, workspace = build({'shelf_id': 's', 'location_id': 'l', 'name': 'n'})
+
+    built = InventoryService().build_event(
+        tenant=tenant, workspace=workspace, resource=event.resource, action=EventAction.CREATED, user=user,
+        data=event.data, event_class=InventoryShelfCreatedEvent)
+    returned = await EventMessagePublisher(transport).publish(built, 'token')
+
+    assert len(transport.calls) == 1
+    assert isinstance(returned, InventoryShelfCreatedMessage)

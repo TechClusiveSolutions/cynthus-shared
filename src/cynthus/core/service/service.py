@@ -33,11 +33,22 @@ class Service(BaseModel):
 
     def build_event(
         self, *, tenant: Tenant, workspace: Workspace, resource: Resource, action: EventAction, user: User,
-        data: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None, event_class: type[UserEvent] | None = None,
     ) -> UserEvent:
-        """An event for an action a user took on a resource, recorded by this service."""
+        """
+            An event for an action a user took on a resource, recorded by this service
 
-        return self.event_class(
+            ``event_class`` names a more specific kind of event than the service default, for example
+            ``InventoryShelfCreatedEvent``, so its typed ``data`` is checked and a signal generator is found for it.
+            ``TypeError`` when it is not a ``UserEvent`` class.
+        """
+
+        kind = self.event_class if event_class is None else event_class
+
+        if not (isinstance(kind, type) and issubclass(kind, UserEvent)):
+            raise TypeError(f'{kind!r} is not a UserEvent class')
+
+        return kind(
             tenant=tenant, workspace=workspace, resource=resource, action=action, user=user, data=data or {},
             service_id=self.id_,
         )
