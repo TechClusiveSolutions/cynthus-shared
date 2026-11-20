@@ -22,7 +22,8 @@ payload `observed_at` are `event.occurred_on`. Everything else a signal needs tr
 needs data, the data model of the event must carry it.
 
 An event class may declare `data_model`, a pydantic model. The event checks `data` against it when it is created, so a
-missing field fails where the event is made, not at publish time.
+missing field fails where the event is made, not at publish time. The data models reject keys they do not declare, so a
+misspelled key fails there too.
 
 ## Publishing an event
 

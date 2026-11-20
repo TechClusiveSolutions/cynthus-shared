@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class InventoryLocationUpdatedData(BaseModel):
     """The data of an inventory location updated event: the id, and only the fields that changed"""
+
+    model_config = ConfigDict(extra='forbid')
 
     location_id: str
     name: str | None = None
