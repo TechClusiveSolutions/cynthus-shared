@@ -36,3 +36,8 @@ def test_required_fields(missing):
 def test_position_must_be_an_integer():
     with pytest.raises(ValidationError, match='position'):
         InventoryShelfCreatedData(shelf_id='s-1', location_id='loc-1', name='Top', position='first')
+
+
+def test_an_unknown_key_is_refused():
+    with pytest.raises(ValidationError):
+        InventoryShelfCreatedData(shelf_id='s', location_id='l', name='n', misspelled=True)
