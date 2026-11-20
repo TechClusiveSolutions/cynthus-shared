@@ -37,6 +37,8 @@ event = service.build_event(tenant=tenant, workspace=workspace, resource=locatio
 request = service.build_event_request(event, requestor=user, reason='stocking up')
 ```
 
+`build_event` builds the service's default event class. Pass `event_class=` for a more specific kind, such as `InventoryShelfCreatedEvent`, so its typed `data` is checked and a signal generator is found for it when it is published (a class that is not a `UserEvent` raises `TypeError`).
+
 The event carries `service_id`, the service that recorded it. `InventoryService` builds `InventoryEvent` and `InventoryEventRequest`; the others build the general classes. The running parts of a service (routers, subscription, handler, database) are joined to its identity by `ServiceModule` in `cynthus.service`.
 
 ---
