@@ -89,6 +89,24 @@ class TestBuild:
         with pytest.raises(ValueError):
             SignalGeneratorRegistry([Shelf, Shelf])
 
+    def test_failed_register_leaves_the_registry_unchanged(self):
+        class _Two(SignalGenerator):
+            contracts = (LOCATION_CONTRACT, SHELF_CONTRACT)
+
+            def created(self, event):
+                raise NotImplementedError
+
+        registry = SignalGeneratorRegistry([Shelf])
+
+        with pytest.raises(ValueError):
+            registry.register(_Two)
+
+        assert len(registry) == len(Shelf.contracts)
+        assert registry.event_names() == tuple(sorted(c.event for c in Shelf.contracts))
+        assert LOCATION_CONTRACT.event not in registry
+        registry.register(Location)
+        assert LOCATION_CONTRACT.event in registry
+
     @pytest.mark.parametrize('bad', [None, 5, 'Shelf', object, int])
     def test_non_generator_is_refused(self, bad):
         with pytest.raises(ValueError):

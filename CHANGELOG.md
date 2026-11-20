@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- Atomic registration (issue 165): `SignalGeneratorRegistry.register` checks every contract before it stores any, so a refused generator leaves the registry unchanged.
 - Concrete events from services (issue 164): `Service.build_event` takes `event_class`, so a service can build `InventoryShelfCreatedEvent` and similar events that have a signal generator.
 - Coverage gate (issue 158): CI runs the tests with `--cov-branch` and `.github/scripts/check_coverage.py` checks 90 percent of lines and 80 percent of branches separately.
 - Unix line endings (issue 155): `.gitattributes` (`* text=auto eol=lf`), `.editorconfig`, every text file committed with LF, and a CI check (`.github/scripts/check_line_endings.py`) that rejects CRLF.
