@@ -29,3 +29,7 @@ def test_required_ids(missing):
     with pytest.raises(ValidationError, match=missing):
         InventoryShelfDeletedData(**values)
 
+
+def test_an_unknown_key_is_refused():
+    with pytest.raises(ValidationError):
+        InventoryShelfDeletedData(shelf_id='x', location_id='x', misspelled=True)

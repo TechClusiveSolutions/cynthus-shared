@@ -32,3 +32,8 @@ def test_every_field_is_required(missing):
 def test_wrongly_typed_field():
     with pytest.raises(ValidationError):
         InventoryLocationCreatedData(location_id={'a': 1}, name='Pantry', type='ambient')
+
+
+def test_an_unknown_key_is_refused():
+    with pytest.raises(ValidationError):
+        InventoryLocationCreatedData(location_id='l', name='n', type='ambient', misspelled=True)

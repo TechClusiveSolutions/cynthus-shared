@@ -22,7 +22,8 @@ payload `observed_at` are `event.occurred_on`. Everything else a signal needs tr
 needs data, the data model of the event must carry it.
 
 An event class may declare `data_model`, a pydantic model. The event checks `data` against it when it is created, so a
-missing field fails where the event is made, not at publish time.
+missing field fails where the event is made, not at publish time. The data models reject keys they do not declare, so a
+misspelled key fails there too.
 
 ## Publishing an event
 
@@ -30,6 +31,9 @@ missing field fails where the event is made, not at publish time.
 publisher = EventMessagePublisher(transport=RabbitMqSignalPublisher(...))
 message = await publisher.publish(event, access_token, topic=topic)
 ```
+
+Build the event with the concrete class the generator is registered for, because the registry matches the class name:
+`service.build_event(..., event_class=InventoryShelfCreatedEvent)`. A plain `InventoryEvent` has no generator.
 
 `EventMessagePublisher` wraps any `SignalPublisher`. It finds the generator in a `SignalGeneratorRegistry`, generates
 the message, hands it to the transport and returns it. A lookup or generation error propagates and nothing is sent.

@@ -43,6 +43,7 @@ class SignalGeneratorRegistry:
 
         instance = generator()
 
+        # Check every contract first so a failure leaves the registry unchanged
         for contract in generator.contracts:
             signal = contract.signal
 
@@ -64,6 +65,8 @@ class SignalGeneratorRegistry:
             if signal.name in self._events:
                 raise ValueError(f'{signal.name} is already registered (for {self._events[signal.name]})')
 
+        for contract in generator.contracts:
+            signal = contract.signal
             self._generators[contract.event] = instance
             self._contracts[contract.event] = contract
             self._events[signal.name] = contract.event

@@ -3,7 +3,15 @@
 import pytest
 from pydantic import ValidationError
 
-from cynthus.core.event import Event, EventAction, EventRequest, InventoryEvent, InventoryEventRequest, UserEvent
+from cynthus.core.event import (
+    Event,
+    EventAction,
+    EventRequest,
+    InventoryEvent,
+    InventoryEventRequest,
+    InventoryShelfCreatedEvent,
+    UserEvent,
+)
 from cynthus.core.resource import StorageLocation
 from cynthus.core.service import (
     InventoryService,
@@ -95,6 +103,38 @@ def test_the_inventory_service_builds_inventory_events_and_requests(scene):
     assert request.event is event
     assert request.requestor == user
     assert request.reason == 'stocking up'
+
+
+def test_build_event_builds_the_class_it_is_given(scene):
+    user, tenant, workspace, location = scene
+    service = InventoryService()
+    data = {'shelf_id': 's1', 'location_id': 'l1', 'name': 'Top'}
+
+    event = service.build_event(
+        tenant=tenant, workspace=workspace, resource=location, action=EventAction.CREATED, user=user, data=data,
+        event_class=InventoryShelfCreatedEvent)
+
+    assert type(event) is InventoryShelfCreatedEvent
+    assert event.service_id == service.id_
+
+
+def test_the_given_event_class_still_checks_its_data(scene):
+    user, tenant, workspace, location = scene
+
+    with pytest.raises(ValidationError):
+        InventoryService().build_event(
+            tenant=tenant, workspace=workspace, resource=location, action=EventAction.CREATED, user=user,
+            event_class=InventoryShelfCreatedEvent)
+
+
+@pytest.mark.parametrize('bad', [Event, int, 'UserEvent', 5])
+def test_an_event_class_that_is_not_a_user_event_is_refused(scene, bad):
+    user, tenant, workspace, location = scene
+
+    with pytest.raises(TypeError):
+        InventoryService().build_event(
+            tenant=tenant, workspace=workspace, resource=location, action=EventAction.CREATED, user=user,
+            event_class=bad)
 
 
 def test_another_service_builds_the_general_request(scene):

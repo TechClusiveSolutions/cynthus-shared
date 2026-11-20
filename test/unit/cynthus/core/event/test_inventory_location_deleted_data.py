@@ -28,3 +28,7 @@ def test_required_ids(missing):
     with pytest.raises(ValidationError, match=missing):
         InventoryLocationDeletedData(**values)
 
+
+def test_an_unknown_key_is_refused():
+    with pytest.raises(ValidationError):
+        InventoryLocationDeletedData(location_id='l', misspelled=True)

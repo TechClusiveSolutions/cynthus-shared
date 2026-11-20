@@ -56,3 +56,7 @@ def test_position_must_have_the_right_type():
     with pytest.raises(ValidationError, match='position'):
         InventoryShelfUpdatedData(shelf_id='s-1', location_id='loc-1', position='first')
 
+
+def test_an_unknown_key_is_refused():
+    with pytest.raises(ValidationError):
+        InventoryShelfUpdatedData(shelf_id='x', location_id='x', name='n', misspelled=True)

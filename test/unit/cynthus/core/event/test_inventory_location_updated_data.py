@@ -63,3 +63,7 @@ def test_archived_must_have_the_right_type():
     with pytest.raises(ValidationError, match='archived'):
         InventoryLocationUpdatedData(location_id='loc-1', archived='maybe')
 
+
+def test_an_unknown_key_is_refused():
+    with pytest.raises(ValidationError):
+        InventoryLocationUpdatedData(location_id='l', name='n', misspelled=True)
