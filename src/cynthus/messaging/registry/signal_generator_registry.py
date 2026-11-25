@@ -71,7 +71,7 @@ class SignalGeneratorRegistry:
             self._contracts[contract.event] = contract
             self._events[signal.name] = contract.event
 
-    def generator_for(self, event: Event | str) -> SignalGenerator:
+    def generator_for(self, event: Event | SignalEvent | str) -> SignalGenerator:
         """The generator for an event instance or an event class name; ``UnknownEventError`` when absent"""
 
         name = event if isinstance(event, str) else type(event).__name__
@@ -81,7 +81,7 @@ class SignalGeneratorRegistry:
         except KeyError:
             raise UnknownEventError(f'No signal generator is registered for the event {name}') from None
 
-    def signal_for(self, event: Event | str) -> type[SignalBase]:
+    def signal_for(self, event: Event | SignalEvent | str) -> type[SignalBase]:
         """The signal class for an event instance or an event class name; ``UnknownEventError`` when absent"""
 
         name = event if isinstance(event, str) else type(event).__name__
@@ -134,5 +134,6 @@ class SignalGeneratorRegistry:
         """A new registry holding the built-in generators"""
 
         from ..component.inventory.generator import InventoryLocationSignalGenerator, InventoryShelfSignalGenerator
+        from ..component.partner.generator import PartnerSignalGenerator
 
-        return cls([InventoryLocationSignalGenerator, InventoryShelfSignalGenerator])
+        return cls([InventoryLocationSignalGenerator, InventoryShelfSignalGenerator, PartnerSignalGenerator])

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ...core.event import Event
+from ...core.event import Event, SignalEvent
 from ..common.signal.message_base import SignalMessageBase
 from ..registry import SignalGeneratorRegistry
 from ..topic.signal_topic import SignalTopic
@@ -22,7 +22,7 @@ class EventMessagePublisher:
         self._registry = SignalGeneratorRegistry.default() if registry is None else registry
 
     async def publish(
-        self, event: Event, access_token: str | None = None, *, topic: SignalTopic | None = None
+        self, event: Event | SignalEvent, access_token: str | None = None, *, topic: SignalTopic | None = None
     ) -> SignalMessageBase:
         """Generate the message for ``event``, publish it and return it (``message.event_type`` is the signal name)"""
 

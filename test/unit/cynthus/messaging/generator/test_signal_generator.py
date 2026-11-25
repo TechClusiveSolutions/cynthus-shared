@@ -7,11 +7,11 @@ generators. Events are real events built through the ``make_event`` fixture.
 import builtins
 import dataclasses
 import socket
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 
-from cynthus.core.event import Event, InventoryShelfCreatedEvent, SystemEvent
+from cynthus.core.event import Event, EventAction, InventoryShelfCreatedEvent, SignalEvent, SystemEvent
 from cynthus.core.system.system import SYSTEM_ID
 from cynthus.messaging.common.signal.lifecycle_action import LifecycleAction
 from cynthus.messaging.common.signal.public_inventory_location_created import PublicInventoryLocationCreatedSignal
@@ -462,3 +462,77 @@ class TestNewClassBodyChecks:
         )
 
         assert _define(contract)
+
+
+class ProbeSignalEvent(SignalEvent):
+    """A signal event (ids only) for the shelf contract"""
+
+
+class TestEnvelopeForSignalEvent:
+    @pytest.fixture
+    def signal_event(self):
+        return ProbeSignalEvent(
+            tenant_id=uuid4(), workspace_id=uuid4(), actor_id=uuid4(), action=EventAction.CREATED,
+            data=dict(_SHELF_DATA),
+        )
+
+    def test_carries_the_ids_and_the_contract_values(self, signal_event):
+        envelope = _build(SHELF, 'ProbeSignalEvent')().envelope(signal_event, SHELF)
+
+        assert envelope == {
+            'event_id': signal_event.id_,
+            'timestamp': signal_event.occurred_on,
+            'tenant_id': signal_event.tenant_id,
+            'workspace_id': signal_event.workspace_id,
+            'correlation_id': signal_event.correlation_id,
+            'actor_id': signal_event.actor_id,
+            'event_type': 'public.inventory.shelf.created',
+            'lifecycle_action': LifecycleAction.CREATED,
+        }
+
+    def test_lifecycle_action_comes_from_the_contract(self, signal_event):
+        contract = dataclasses.replace(SHELF, lifecycle_action=LifecycleAction.UPDATED)
+
+        envelope = _build(SHELF, 'ProbeSignalEvent')().envelope(signal_event, contract)
+
+        assert envelope['lifecycle_action'] == LifecycleAction.UPDATED
+
+    def test_generate_accepts_a_signal_event(self, signal_event):
+        message = _build(SHELF, 'ProbeSignalEvent')().generate(signal_event)
+
+        assert type(message) is InventoryShelfCreatedMessage
+        assert message.event_id == signal_event.id_
+        assert message.timestamp == signal_event.occurred_on
+        assert message.tenant_id == signal_event.tenant_id
+        assert message.workspace_id == signal_event.workspace_id
+        assert message.correlation_id == signal_event.correlation_id
+        assert message.actor_id == signal_event.actor_id
+
+    def test_generating_twice_gives_equal_messages(self, signal_event):
+        generator = _build(SHELF, 'ProbeSignalEvent')()
+
+        assert generator.generate(signal_event) == generator.generate(signal_event)
+
+    def test_unknown_signal_event_raises_unknown_event_error(self, signal_event):
+        with pytest.raises(UnknownEventError):
+            _ShelfGenerator().generate(signal_event)
+
+    def test_event_envelope_is_unchanged(self, shelf_event):
+        envelope = _ShelfGenerator().envelope(shelf_event, SHELF)
+
+        assert envelope == {
+            'event_id': shelf_event.id_,
+            'timestamp': shelf_event.occurred_on,
+            'tenant_id': shelf_event.tenant.id_,
+            'workspace_id': shelf_event.workspace.id_,
+            'correlation_id': shelf_event.correlation_id,
+            'actor_id': shelf_event.user.id_,
+            'event_type': 'public.inventory.shelf.created',
+            'lifecycle_action': LifecycleAction.CREATED,
+        }
+
+    def test_event_with_neither_still_raises_value_error(self, make_event):
+        event = make_event(NobodyShelfEvent, dict(_SHELF_DATA))
+
+        with pytest.raises(ValueError, match='NobodyShelfEvent'):
+            _build(SHELF, 'NobodyShelfEvent')().envelope(event, SHELF)

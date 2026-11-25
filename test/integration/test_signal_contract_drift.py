@@ -6,7 +6,7 @@ import re
 import pytest
 
 import cynthus.core.event as core_event
-from cynthus.core.event import Event
+from cynthus.core.event import Event, SignalEvent
 from cynthus.messaging.common.signal.base import SignalBase
 from cynthus.messaging.common.signal.lifecycle_action import LifecycleAction
 from cynthus.messaging.common.signal.payload import SignalPayload
@@ -86,7 +86,7 @@ class TestContract:
         event_class = getattr(core_event, contract.event, None)
 
         assert isinstance(event_class, type), f'{contract.event} is not exported from cynthus.core.event'
-        assert issubclass(event_class, Event)
+        assert issubclass(event_class, (Event, SignalEvent))
         assert event_class.__name__ == contract.event
 
     def test_event_type_matches_the_signal_name(self, contract):

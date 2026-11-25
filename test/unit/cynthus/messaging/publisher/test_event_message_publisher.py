@@ -180,3 +180,46 @@ class TestPublish:
 
         assert len(transport.calls) == 2
         assert transport.calls[0][0] == transport.calls[1][0]
+
+
+@pytest.mark.asyncio
+class TestPublishSignalEvent:
+    @staticmethod
+    def _event(event_class=None):
+        from uuid import uuid4
+
+        from cynthus.core.event import EventAction, PartnerServiceListRequestedEvent
+
+        return (event_class or PartnerServiceListRequestedEvent)(
+            tenant_id=uuid4(), workspace_id=uuid4(), actor_id=uuid4(), action=EventAction.RETRIEVED, data={},
+        )
+
+    async def test_one_transport_call_with_the_generated_message(self):
+        transport = Recording()
+        event = self._event()
+
+        message = await EventMessagePublisher(transport).publish(event, 'token')
+
+        assert len(transport.calls) == 1
+        assert transport.calls[0][0] is message
+        assert transport.calls[0][1] == 'token'
+        assert message.event_id == event.id_
+        assert message.event_type == 'public.partner.service_list.requested'
+        assert message.tenant_id == event.tenant_id
+        assert message.workspace_id == event.workspace_id
+        assert message.actor_id == event.actor_id
+        assert message.correlation_id == event.correlation_id
+
+    async def test_unknown_signal_event_raises_unknown_event_error_and_publishes_nothing(self):
+        from cynthus.core.event import PartnerEvent
+
+        transport = Recording()
+
+        with pytest.raises(UnknownEventError):
+            await EventMessagePublisher(transport).publish(self._event(PartnerEvent))
+
+        assert transport.calls == []
+
+    async def test_transport_failure_propagates(self):
+        with pytest.raises(ConnectionError):
+            await EventMessagePublisher(Failing()).publish(self._event())

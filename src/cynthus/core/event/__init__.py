@@ -22,6 +22,13 @@ from .inventory_shelf_deleted_data import InventoryShelfDeletedData
 from .inventory_shelf_deleted_event import InventoryShelfDeletedEvent
 from .inventory_shelf_updated_data import InventoryShelfUpdatedData
 from .inventory_shelf_updated_event import InventoryShelfUpdatedEvent
+from .partner_event import PartnerEvent
+from .partner_service_list_filters_data import PartnerServiceListFiltersData
+from .partner_service_list_item_data import PartnerServiceListItemData
+from .partner_service_list_requested_data import PartnerServiceListRequestedData
+from .partner_service_list_requested_event import PartnerServiceListRequestedEvent
+from .partner_service_list_responded_data import PartnerServiceListRespondedData
+from .partner_service_list_responded_event import PartnerServiceListRespondedEvent
 from .signal_event import SignalEvent
 from .system_event import SystemEvent
 from .user_event import UserEvent
