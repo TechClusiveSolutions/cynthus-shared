@@ -10,6 +10,9 @@ version and date.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-11-25
+
+- Database per environment (issue 173): `Database.engine(target)` returns a cached engine per target, `Database.get_session(env, service)` builds a session on the right database and schema, and `DatabaseTarget.resolve(env, service)` reads `DB_*` (production), `TEST_DB_*` (testing) or `DEV_DB_*` (development). `cynthus.model.Base`, the declarative base with a UUID `id`, ships with it.
 - Single parse of event data (issue 167): `Event.parsed_data(model)` returns the model parsed at creation when it matches, and the inventory generators use it, so a typed event is validated once.
 - Strict event data (issue 166): the six inventory event data models reject unknown keys, so a misspelled change key fails when the event is created instead of reaching the signal as unchanged.
 - Atomic registration (issue 165): `SignalGeneratorRegistry.register` checks every contract before it stores any, so a refused generator leaves the registry unchanged.
