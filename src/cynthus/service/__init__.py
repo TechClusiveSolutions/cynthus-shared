@@ -1,6 +1,7 @@
 from .api_error import ApiError
 from .body import Body
 from .database import Database
+from .database_target import DatabaseTarget
 from .database_url import DatabaseUrl
 from .fact import Fact
 from .facts import Facts
