@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from datetime import datetime, timezone
 from typing import Any, ClassVar, TypeVar
 from uuid import UUID, uuid4
@@ -12,6 +11,7 @@ from pydantic import BaseModel, Field, PrivateAttr, model_validator
 from ..resource import Resource
 from ..system import Tenant, Workspace
 from .event_action import EventAction
+from .event_type_name import event_type_name
 
 ModelT = TypeVar('ModelT', bound=BaseModel)
 
@@ -60,9 +60,4 @@ class Event(BaseModel):
         """The snake_case class name without a trailing ``Event`` (``InventoryLocationCreatedEvent`` is
         ``inventory_location_created``; a class named exactly ``Event`` is ``event``)"""
 
-        name = type(self).__name__
-        name = name.removesuffix('Event') or name
-        name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)
-        name = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
-
-        return name.lower()
+        return event_type_name(type(self).__name__)

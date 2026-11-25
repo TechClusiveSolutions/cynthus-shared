@@ -2,6 +2,7 @@ from .decision_condition import DecisionCondition
 from .decision_condition_status import DecisionConditionStatus
 from .event import Event
 from .event_action import EventAction
+from .event_hooks import EventHooks
 from .event_request import EventRequest
 from .event_request_answer_reason import EventRequestAnswerReason
 from .event_request_decision import EventRequestDecision
@@ -21,5 +22,6 @@ from .inventory_shelf_deleted_data import InventoryShelfDeletedData
 from .inventory_shelf_deleted_event import InventoryShelfDeletedEvent
 from .inventory_shelf_updated_data import InventoryShelfUpdatedData
 from .inventory_shelf_updated_event import InventoryShelfUpdatedEvent
+from .signal_event import SignalEvent
 from .system_event import SystemEvent
 from .user_event import UserEvent

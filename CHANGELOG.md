@@ -10,6 +10,8 @@ version and date.
 
 ## [Unreleased]
 
+- Signal events and hooks (issue 177): `SignalEvent`, an id based event (tenant, workspace and actor ids) that a received signal can become, frozen, with optional typed `data_model` and an `actions` check, and `EventHooks`, which awaits the hooks registered for an event's class or a base class, logging a failing hook without stopping the next. `Event` is unchanged; its `event_type` rule now lives in the helper `event_type_name`. Guides: `docs/cynthus/core/event/`.
+
 ## [0.19.0] - 2026-11-25
 
 - Database per environment (issue 173): `Database.engine(target)` returns a cached engine per target, `Database.get_session(env, service)` builds a session on the right database and schema, and `DatabaseTarget.resolve(env, service)` reads `DB_*` (production), `TEST_DB_*` (testing) or `DEV_DB_*` (development). `cynthus.model.Base`, the declarative base with a UUID `id`, ships with it.
