@@ -40,6 +40,41 @@ the message, hands it to the transport and returns it. A lookup or generation er
 `UnknownEventError` means no generator is registered for the event. Code that already holds a message calls the
 transport directly.
 
+## Reading a signal as an event
+
+`SignalEventReader` is the other direction: it turns a received signal message into a `SignalEvent`, using the contract
+of the event class read in reverse.
+
+```python
+reader = SignalEventReader()
+event = reader.read(message, claims, MyRequestedEvent, action=EventAction.RETRIEVED)
+```
+
+`message` is a parsed `SignalMessageBase`, `claims` are the `TokenClaims` of the verified token, and `event_class` is the
+`SignalEvent` subclass that a generator is registered for. `registry` defaults to `SignalGeneratorRegistry.default()`.
+
+`read` follows these rules, in order:
+
+1. `UnknownEventError` when no contract is registered for the class name of `event_class`.
+2. `SignalEventMismatch` naming `event_type` when the message is not the signal of the contract.
+3. `SignalEventMismatch` naming the first of `tenant_id`, `workspace_id` and `actor_id` (the token `subject`) that
+   differs between the message and the claims. The text names the field and never an id value. A caller who puts
+   someone else's ids in a signal is refused; the event always carries the claims.
+4. The data is the payload dumped in JSON mode (ids, times and enums become text, nested models become dictionaries,
+   like the data of an event built from a request), taking each field whose source is `data.<name>` under the key
+   `<name>`; the data model of the event parses it back to typed values. A message whose payload is not the payload
+   class of the contract raises `SignalEventMismatch` naming `payload`. Sources
+   `tenant.`, `workspace.` and `env.` are skipped, because they are not event data. A `resource.` or `user.` source
+   raises `ValueError` naming the field, because a `SignalEvent` has no resource or user to read it back into.
+5. The action is the `action` argument, else the only member of `event_class.actions`, else `ValueError`
+   ('action is required'). The action of the message is not used: a lifecycle action does not map one to one to an
+   `EventAction`.
+6. The event takes `id_`, `correlation_id` and `occurred_on` from the message `event_id`, `correlation_id` and
+   `timestamp`. A data or action check that fails is the `pydantic.ValidationError` of the event, not wrapped.
+
+`SignalGeneratorRegistry.contract_for(event)` returns the contract registered for an event instance or an event class
+name, and raises `UnknownEventError` when there is none.
+
 ## Adding a signal
 
 The signal, message and payload classes are described in

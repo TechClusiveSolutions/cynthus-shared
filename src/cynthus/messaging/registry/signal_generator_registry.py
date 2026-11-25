@@ -6,7 +6,7 @@ import re
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
-from ...core.event import Event
+from ...core.event import Event, SignalEvent
 from ..common.signal.base import SignalBase
 from .unknown_event_error import UnknownEventError
 
@@ -88,6 +88,16 @@ class SignalGeneratorRegistry:
 
         try:
             return self._contracts[name].signal
+        except KeyError:
+            raise UnknownEventError(f'No signal generator is registered for the event {name}') from None
+
+    def contract_for(self, event: Event | SignalEvent | str) -> SignalContract:
+        """The contract for an event instance or an event class name; ``UnknownEventError`` when absent"""
+
+        name = event if isinstance(event, str) else type(event).__name__
+
+        try:
+            return self._contracts[name]
         except KeyError:
             raise UnknownEventError(f'No signal generator is registered for the event {name}') from None
 
