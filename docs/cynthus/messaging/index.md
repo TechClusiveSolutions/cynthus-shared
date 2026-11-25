@@ -101,6 +101,9 @@ Paths are relative to `docs/cynthus/messaging/`. Each line is a path, then what 
     - `suggestion.md`: meal.suggestion.* signals
     - `tag.md`: meal.tag.* signals
     - `vote.md`: meal.vote.* signals
+  - `partner/`
+    - `index.md`: partner domain overview
+    - `service_list.md`: partner.service_list.* signals
 - `broker.md`: choosing the broker: Service Bus or RabbitMQ
 - `subscription.md`: all per-service subscription classes
 - `topic.md`: topic classes

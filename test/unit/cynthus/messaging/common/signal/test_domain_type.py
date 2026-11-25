@@ -13,6 +13,7 @@ MEMBERS = [
     ('INTELLIGENCE', 'intelligence'),
     ('INVENTORY', 'inventory'),
     ('MEAL', 'meal'),
+    ('PARTNER', 'partner'),
     ('PROFILE', 'profile'),
     ('RECIPE', 'recipe'),
     ('SHOPPING_LIST', 'shopping_list'),
