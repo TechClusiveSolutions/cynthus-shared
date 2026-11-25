@@ -16,3 +16,5 @@ from .signal_access import SignalAccess
 from .signal_broker import SignalBroker
 from .signal_bus_unavailable_handler import signal_bus_unavailable_handler, unavailable_response
 from .signal_consumer import SignalConsumer
+from .signal_router import SignalRouter
+from .unknown_signal_error import UnknownSignalError
