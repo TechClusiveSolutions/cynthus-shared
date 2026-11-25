@@ -11,6 +11,7 @@ version and date.
 ## [Unreleased]
 
 - Signal events and hooks (issue 177): `SignalEvent`, an id based event (tenant, workspace and actor ids) that a received signal can become, frozen, with optional typed `data_model` and an `actions` check, and `EventHooks`, which awaits the hooks registered for an event's class or a base class, logging a failing hook without stopping the next. `Event` is unchanged; its `event_type` rule now lives in the helper `event_type_name`. Guides: `docs/cynthus/core/event/`.
+- Partner service list signals (issue 176): `SignalDomainType.PARTNER`, `PublicPartnerServiceListRequestedSignal` and `PublicPartnerServiceListRespondedSignal` (`public.partner.service_list.requested` and `.responded`), the payloads `PartnerServiceListRequestedPayload` (with `PartnerServiceListFilters`) and `PartnerServiceListRespondedPayload` (with `PartnerServiceListItem`), and the two messages, in `cynthus.messaging.component.partner`. Docs: `docs/cynthus/messaging/component/partner/`.
 
 ## [0.19.0] - 2026-11-25
 
