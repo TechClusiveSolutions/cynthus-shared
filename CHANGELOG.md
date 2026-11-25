@@ -10,6 +10,7 @@ version and date.
 
 ## [Unreleased]
 
+- Signal router (issue 180): `SignalRouter`, a decorator style subscriber (`subscriber(signal_name)`, `exception_handler(exception_type)`, `dispatch(signal, publisher)`) that `ServiceModule(handler=router.dispatch)` runs through the platform path and that publishes what a function returns (a message, an `Event` or a `SignalEvent`), and `UnknownSignalError` for a signal with no function. Guide: `docs/cynthus/service/signal_router.md`.
 - Signal events and hooks (issue 177): `SignalEvent`, an id based event (tenant, workspace and actor ids) that a received signal can become, frozen, with optional typed `data_model` and an `actions` check, and `EventHooks`, which awaits the hooks registered for an event's class or a base class, logging a failing hook without stopping the next. `Event` is unchanged; its `event_type` rule now lives in the helper `event_type_name`. Guides: `docs/cynthus/core/event/`.
 - Partner service list signals (issue 176): `SignalDomainType.PARTNER`, `PublicPartnerServiceListRequestedSignal` and `PublicPartnerServiceListRespondedSignal` (`public.partner.service_list.requested` and `.responded`), the payloads `PartnerServiceListRequestedPayload` (with `PartnerServiceListFilters`) and `PartnerServiceListRespondedPayload` (with `PartnerServiceListItem`), and the two messages, in `cynthus.messaging.component.partner`. Docs: `docs/cynthus/messaging/component/partner/`.
 
