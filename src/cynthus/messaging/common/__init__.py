@@ -51,6 +51,8 @@ from .signal import (
     PublicMealVoteCastSignal,
     PublicMealVoteInitiatedSignal,
     PublicMealVoteResolvedSignal,
+    PublicPartnerServiceListRequestedSignal,
+    PublicPartnerServiceListRespondedSignal,
     PublicProfileProfileCreatedSignal,
     PublicProfileProfileDeletedSignal,
     PublicProfileProfileRequestedSignal,

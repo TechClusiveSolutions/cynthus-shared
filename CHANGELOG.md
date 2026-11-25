@@ -10,6 +10,8 @@ version and date.
 
 ## [Unreleased]
 
+- Partner service list signals (issue 176): `SignalDomainType.PARTNER`, `PublicPartnerServiceListRequestedSignal` and `PublicPartnerServiceListRespondedSignal` (`public.partner.service_list.requested` and `.responded`), the payloads `PartnerServiceListRequestedPayload` (with `PartnerServiceListFilters`) and `PartnerServiceListRespondedPayload` (with `PartnerServiceListItem`), and the two messages, in `cynthus.messaging.component.partner`. Docs: `docs/cynthus/messaging/component/partner/`.
+
 ## [0.19.0] - 2026-11-25
 
 - Database per environment (issue 173): `Database.engine(target)` returns a cached engine per target, `Database.get_session(env, service)` builds a session on the right database and schema, and `DatabaseTarget.resolve(env, service)` reads `DB_*` (production), `TEST_DB_*` (testing) or `DEV_DB_*` (development). `cynthus.model.Base`, the declarative base with a UUID `id`, ships with it.

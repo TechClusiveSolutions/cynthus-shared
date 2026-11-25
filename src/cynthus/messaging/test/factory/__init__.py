@@ -4,3 +4,7 @@ from .meal.message import (
     MealSuggestionRejectedMessageFactory,
     MealSuggestionRequestedMessageFactory,
 )
+from .partner.message import (
+    PartnerServiceListRequestedMessageFactory,
+    PartnerServiceListRespondedMessageFactory,
+)
