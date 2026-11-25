@@ -199,6 +199,63 @@ class TestSignalFor:
             SignalGeneratorRegistry([Shelf]).signal_for('NopeEvent')
 
 
+class TestContractFor:
+    def test_by_name_returns_the_registered_contract(self):
+        registry = SignalGeneratorRegistry([Shelf, Location])
+
+        assert registry.contract_for('InventoryShelfCreatedEvent') is SHELF_CONTRACT
+        assert registry.contract_for('InventoryLocationCreatedEvent') is LOCATION_CONTRACT
+
+    def test_by_instance(self, make_event):
+        event = make_event(InventoryLocationCreatedEvent, {'location_id': 'l', 'name': 'n', 'type': 'ambient'})
+
+        assert SignalGeneratorRegistry([Location]).contract_for(event) is LOCATION_CONTRACT
+
+    def test_by_instance_and_by_name_agree(self, make_event):
+        event = make_event(InventoryShelfCreatedEvent, {'shelf_id': 's', 'location_id': 'l', 'name': 'n'})
+        registry = SignalGeneratorRegistry([Shelf])
+
+        assert registry.contract_for(event) is registry.contract_for('InventoryShelfCreatedEvent')
+
+    def test_agrees_with_signal_for(self):
+        registry = SignalGeneratorRegistry([Shelf, Location])
+
+        assert registry.contract_for('InventoryShelfCreatedEvent').signal is registry.signal_for('InventoryShelfCreatedEvent')
+
+    def test_unknown_name(self):
+        with pytest.raises(UnknownEventError, match='NopeEvent'):
+            SignalGeneratorRegistry([Shelf]).contract_for('NopeEvent')
+
+    def test_unknown_instance_names_the_event_class(self, make_event):
+        with pytest.raises(UnknownEventError, match='InventoryEvent'):
+            SignalGeneratorRegistry([Shelf]).contract_for(make_event(InventoryEvent, {}))
+
+    def test_subclass_of_a_registered_event_is_not_matched(self, make_event):
+        class ChildEvent(InventoryShelfCreatedEvent):
+            pass
+
+        event = make_event(ChildEvent, {'shelf_id': 's', 'location_id': 'l', 'name': 'n'})
+
+        with pytest.raises(UnknownEventError):
+            SignalGeneratorRegistry([Shelf]).contract_for(event)
+
+    @pytest.mark.parametrize('name', ['', 'inventoryshelfcreatedevent'])
+    def test_empty_and_wrong_case_names_are_a_miss(self, name):
+        with pytest.raises(UnknownEventError):
+            SignalGeneratorRegistry([Shelf]).contract_for(name)
+
+    def test_empty_registry(self):
+        with pytest.raises(UnknownEventError):
+            SignalGeneratorRegistry([]).contract_for('InventoryShelfCreatedEvent')
+
+    def test_miss_is_a_lookup_error(self):
+        with pytest.raises(LookupError):
+            SignalGeneratorRegistry([]).contract_for('AnyEvent')
+
+    def test_default_registry(self):
+        assert SignalGeneratorRegistry.default().contract_for('InventoryShelfCreatedEvent') is SHELF_CONTRACT
+
+
 class TestEventNameFor:
     def test_reverse_lookup(self):
         registry = SignalGeneratorRegistry([Shelf, Location])
