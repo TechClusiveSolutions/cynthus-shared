@@ -35,12 +35,15 @@ jobs:
               - "src/**"
               - "test/**"
               - ".github/workflows/ci.yml"
+              - ".github/scripts/check_coverage.py"
             docs:
               - "**/*.md"
               - "docs/**"
               - ".markdownlint-cli2.jsonc"
               - ".github/workflows/ci.yml"
               - ".github/scripts/check_markdown.py"
+              # The line-ending check covers every file, so docs-lint runs on every change.
+              - "**"
 
   lint:
     needs: changes
@@ -98,12 +101,14 @@ jobs:
               fi
               if [ -d "${dir}test" ]; then
                 echo "=== ${dir} ==="
-                (cd "${dir}" && python -m pytest --cov=src --cov-fail-under=75 -q)
+                (cd "${dir}" && python -m pytest --cov=src --cov-branch --cov-report=json -q)
+                python .github/scripts/check_coverage.py "${dir}coverage.json" --lines 90 --branches 80
                 suites=$((suites + 1))
               fi
             done
           elif [ -d test ]; then
-            python -m pytest --cov=src --cov-fail-under=75 -q
+            python -m pytest --cov=src --cov-branch --cov-report=json -q
+            python .github/scripts/check_coverage.py coverage.json --lines 90 --branches 80
             suites=1
           fi
           if [ "$suites" -eq 0 ] && find . -name '*.py' -path '*/src/*' -not -path './.deps/*' | grep -q .; then
@@ -117,6 +122,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check line endings
+        run: python3 .github/scripts/check_line_endings.py
       - name: Check screen-reader rules and links
         run: python3 .github/scripts/check_markdown.py
       - name: Run markdownlint

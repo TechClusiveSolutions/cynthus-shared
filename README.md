@@ -45,6 +45,7 @@ None for the library. The settings belong to the services that use it; the signa
 ## More documentation
 
 - [`docs/creating-a-service.md`](docs/creating-a-service.md): how to add a new service, step by step.
+- [`docs/signal-generators.md`](docs/signal-generators.md): how an event becomes a signal message, and how to add a signal.
 - [`docs/releases.md`](docs/releases.md): how to cut a release, and what each release added.
 - [`docs/cynthus/messaging/index.md`](docs/cynthus/messaging/index.md): signals, topics, subscriptions and the broker.
 - [`docs/cynthus/security/index.md`](docs/cynthus/security/index.md): tokens and permissions.

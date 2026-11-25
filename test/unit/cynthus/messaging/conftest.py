@@ -53,3 +53,30 @@ def fake_aio_pika(monkeypatch):
     monkeypatch.setitem(sys.modules, 'aio_pika', broker.module)
 
     return broker
+
+
+@pytest.fixture
+def make_event():
+    """Return ``make(cls, data, **extra)``: a real event of ``cls`` built from a user, tenant and workspace."""
+
+    from cynthus.core.event import EventAction, UserEvent
+    from cynthus.core.resource import StorageLocation
+    from cynthus.core.system import Tenant, Workspace
+    from cynthus.core.user import User
+
+    def make(cls, data, **extra):
+        user = User(first_name='John', last_name='Doe', email='John.Doe@example.com')
+        tenant = Tenant(name='T00001', owner=user, type='personal')
+        workspace = Workspace(name='W00001', tenant=tenant, owner=user)
+        location = StorageLocation(name='Pantry', type='ambient', workspace=workspace)
+        values = {
+            'name': 'E0001', 'tenant': tenant, 'workspace': workspace, 'resource': location,
+            'action': EventAction.CREATED, 'data': data,
+        }
+
+        if issubclass(cls, UserEvent):
+            values['user'] = user
+
+        return cls(**{**values, **extra})
+
+    return make

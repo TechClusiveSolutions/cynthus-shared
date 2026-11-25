@@ -120,7 +120,7 @@ Copy the `analysis` block of `docker-compose.yml` and change the names. It sets,
   generator, never the generated files.
 - Write a test for the signal handler that fails without it, with a fake publisher and a signal built from the real
   contract classes.
-- `python -m pytest --cov=src --cov-fail-under=75` and `ruff check .` must pass.
+- `python -m pytest --cov=src --cov-branch --cov-report=json` and `python .github/scripts/check_coverage.py` and `ruff check .` must pass.
 - Service containers run Python 3.11. Run the tests in the service image as well as on your machine, because code
   that passes on a newer Python can fail in the container.
 
