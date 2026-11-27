@@ -374,6 +374,27 @@ async def test_a_fixed_clock_gives_an_exact_ttl():
 
 
 @pytest.mark.asyncio
+async def test_a_fractional_deadline_is_rounded_up_never_down():
+    now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    response = a_conditional_response(now + timedelta(days=5, milliseconds=400))
+    redis = FakeRedis()
+
+    await DecisionCache(redis, clock=lambda: now).put(response)
+
+    assert seconds_of(redis, response) == 5 * DAY + 1
+
+
+@pytest.mark.asyncio
+async def test_a_fractional_custom_ttl_is_rounded_up_never_down():
+    response = an_approved_response()
+    redis = FakeRedis()
+
+    await DecisionCache(redis, ttl=timedelta(seconds=10.4)).put(response)
+
+    assert seconds_of(redis, response) == 11
+
+
+@pytest.mark.asyncio
 async def test_a_response_without_a_decision_is_silently_not_cached():
     response = EventRequestResponseFactory()
     redis = FakeRedis()

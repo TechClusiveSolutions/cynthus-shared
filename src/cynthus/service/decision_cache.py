@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
+from math import ceil
 from uuid import UUID
 
 from pydantic import ValidationError
@@ -89,4 +90,4 @@ class DecisionCache:
 
                 seconds = max(seconds, (expires_at - now).total_seconds())
 
-        return max(1, round(seconds))
+        return max(1, ceil(seconds))
