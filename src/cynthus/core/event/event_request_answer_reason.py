@@ -15,6 +15,7 @@ class EventRequestAnswerReason(str, Enum):
     """
 
     PERMITTED: str = 'permitted'
+    ACCESS_PERMITTED: str = 'access_permitted'
     APPROVAL_REQUIRED: str = 'approval_required'
     APPROVAL_GRANTED: str = 'approval_granted'
     APPROVAL_DENIED: str = 'approval_denied'
