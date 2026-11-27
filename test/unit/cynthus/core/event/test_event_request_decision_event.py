@@ -212,3 +212,17 @@ class TestValidation:
             DecisionEventRequestApprovedEvent(
                 tenant_id=uuid4(), workspace_id=uuid4(), actor_id=uuid4(), action=EventAction.CREATED, data={},
             )
+
+
+class TestBase:
+    @pytest.mark.parametrize('answer', [a.value for a in EventRequestDecisionAnswer])
+    def test_the_base_class_accepts_any_answer(self, answer):
+        event = Direct.deciding(_request(), _decision(EventRequestDecisionAnswer.APPROVED))
+
+        base = Direct(
+            tenant_id=event.tenant_id, workspace_id=event.workspace_id, actor_id=event.actor_id,
+            action=EventAction.CREATED, data={**event.data, 'answer': answer},
+        )
+
+        assert type(base) is Direct
+        assert base.parsed_data(EventRequestDecisionData).answer == answer

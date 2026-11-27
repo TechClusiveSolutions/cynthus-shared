@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 import pytest
+from pydantic import ValidationError
 
 from cynthus.core.event import (
     DecisionCondition,
@@ -198,3 +199,17 @@ class TestDecisionRoundTrip:
 
         with pytest.raises(UnknownEventError):
             SignalEventReader().read(message, _claims(event), EventRequestDecisionEvent)
+
+
+@pytest.mark.asyncio
+class TestAnswerMustMatchTheSignal:
+    @pytest.mark.parametrize('build, event_class, signal', CASES)
+    async def test_a_payload_answer_that_differs_from_the_event_class_is_refused(self, build, event_class, signal):
+        _, event = build()
+        message = await _publish(event)
+        answer = 'denied' if message.payload.answer != 'denied' else 'approved'
+        forged = message.model_copy(update={'payload': message.payload.model_copy(update={'answer': answer})})
+        received = type(message).model_validate_json(forged.model_dump_json())
+
+        with pytest.raises(ValidationError):
+            SignalEventReader().read(received, _claims(event), event_class)

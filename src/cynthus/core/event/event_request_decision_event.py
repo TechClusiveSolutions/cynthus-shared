@@ -5,13 +5,14 @@ from __future__ import annotations
 from typing import ClassVar
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from ..system import System
 from ..user import User
 from .event_action import EventAction
 from .event_request import EventRequest
 from .event_request_decision import EventRequestDecision
+from .event_request_decision_answer import EventRequestDecisionAnswer
 from .event_request_decision_data import EventRequestDecisionData
 from .signal_event import SignalEvent
 
@@ -26,6 +27,18 @@ class EventRequestDecisionEvent(SignalEvent):
 
     data_model: ClassVar[type[BaseModel] | None] = EventRequestDecisionData
     actions: ClassVar[frozenset[EventAction] | None] = frozenset({EventAction.CREATED})
+    answer: ClassVar[EventRequestDecisionAnswer | None] = None
+
+    @model_validator(mode='after')
+    def _validate_answer(self) -> EventRequestDecisionEvent:
+        """Check that the answer in ``data`` is the answer this event class stands for"""
+
+        if self.answer is not None and self.data.get('answer') != self.answer.value:
+            raise ValueError(
+                f'{type(self).__name__} stands for the answer {self.answer.value!r}, not {self.data.get("answer")!r}'
+            )
+
+        return self
 
     @classmethod
     def deciding(
@@ -44,7 +57,6 @@ class EventRequestDecisionEvent(SignalEvent):
         from .decision_event_request_approved_event import DecisionEventRequestApprovedEvent
         from .decision_event_request_denied_conditionally_event import DecisionEventRequestDeniedConditionallyEvent
         from .decision_event_request_denied_event import DecisionEventRequestDeniedEvent
-        from .event_request_decision_answer import EventRequestDecisionAnswer
 
         classes = {
             EventRequestDecisionAnswer.APPROVED: DecisionEventRequestApprovedEvent,

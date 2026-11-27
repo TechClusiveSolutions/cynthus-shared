@@ -11,16 +11,16 @@ from cynthus.core.event.decision_event_request_denied_conditionally_event import
 )
 
 
-def _data():
+def _data(answer='denied_conditionally'):
     return {
         'event_request_id': str(uuid4()), 'requested_event_type': 'partner_service_list_requested',
-        'requested_action': 'retrieved', 'requestor_id': str(uuid4()), 'answer': 'denied_conditionally',
+        'requested_action': 'retrieved', 'requestor_id': str(uuid4()), 'answer': answer,
         'answer_reason': 'approval_required', 'determined_on': '2026-11-27T09:00:00+00:00',
     }
 
 
-def _make(action=EventAction.CREATED):
-    return Direct(tenant_id=uuid4(), workspace_id=uuid4(), actor_id=uuid4(), action=action, data=_data())
+def _make(action=EventAction.CREATED, answer='denied_conditionally'):
+    return Direct(tenant_id=uuid4(), workspace_id=uuid4(), actor_id=uuid4(), action=action, data=_data(answer))
 
 
 def test_is_exported_from_the_package():
@@ -49,3 +49,13 @@ def test_only_created_is_allowed():
 def test_any_other_action_is_refused(action):
     with pytest.raises(ValidationError):
         _make(action)
+
+
+def test_the_matching_answer_is_accepted():
+    assert _make(answer='denied_conditionally').parsed_data(EventRequestDecisionData).answer == 'denied_conditionally'
+
+
+@pytest.mark.parametrize('other', ['approved', 'approved_conditionally', 'denied'])
+def test_any_other_answer_is_refused(other):
+    with pytest.raises(ValidationError):
+        _make(answer=other)
