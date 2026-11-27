@@ -8,7 +8,8 @@ date the expiry of an approval.
 
 ```python
 claims = await access.authenticate(message, signal_message)               # SignalAccess: genuine and matching, no permission yet
-event = SignalEventReader.read(signal_message, claims, PartnerServiceListRequestedEvent)
+reader = SignalEventReader()
+event = reader.read(signal_message, claims, PartnerServiceListRequestedEvent)
 request = EventRequest(event=event, requestor=claims.subject)
 policy = DecisionPolicy(determined_by=service_id)
 response = policy.decide(request, claims, permission='partner:read', resource_tenant_id=resource.tenant_id)
