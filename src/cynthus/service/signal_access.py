@@ -71,6 +71,44 @@ class SignalAccess:
 
         return claims
 
+    async def authenticate(self, message, signal_message) -> TokenClaims:
+        """Verifies the token and that it names the signal's tenant, workspace and actor, without asking for a permission
+
+        Use it when the permission is decided later (see ``DecisionPolicy``). Refusals are the ones ``authorize`` makes and
+        are recorded as ``rejected``; a token that lacks a permission is not refused, and nothing is recorded as granted.
+        """
+
+        logger = LOGGER.getChild('authenticate')
+
+        resource, method = signal_message.event_type, 'SIGNAL'
+
+        try:
+            claims = await self.verifier.verify(BearerToken.extract(self._header(message)))
+        except TokenError as error:
+            logger.warning('Refused signal %s: %s', signal_message.event_id, error.reason)
+
+            await self._record('rejected', error.reason, resource, method)
+
+            raise
+
+        if not claims.has_workspace:
+            logger.warning('Refused signal %s: the token has no workspace', signal_message.event_id)
+
+            await self._record('rejected', 'workspace_required', resource, method)
+
+            raise Forbidden('workspace_required')
+
+        if (claims.organization_id, claims.workspace_id, claims.subject) != (
+            signal_message.organization_id, signal_message.workspace_id, signal_message.actor_id,
+        ):
+            logger.warning('Refused signal %s: the token belongs to another caller', signal_message.event_id)
+
+            await self._record('rejected', 'the token does not match the signal', resource, method)
+
+            raise TokenError('the token does not match the signal')
+
+        return claims
+
     async def _record(self, decision: str, *arguments) -> None:
         if self.recorder is None:
             return
