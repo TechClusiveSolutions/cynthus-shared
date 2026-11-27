@@ -35,6 +35,10 @@ message = await publisher.publish(event, access_token, topic=topic)
 Build the event with the concrete class the generator is registered for, because the registry matches the class name:
 `service.build_event(..., event_class=InventoryShelfCreatedEvent)`. A plain `InventoryEvent` has no generator.
 
+A `SignalEvent` (ids only, no tenant, workspace or user objects) is accepted wherever an `Event` is: `envelope` takes
+its `tenant_id`, `workspace_id` and `actor_id` straight from the event. The partner events are of this kind; see
+`docs/cynthus/messaging/component/partner/generator.md`.
+
 `EventMessagePublisher` wraps any `SignalPublisher`. It finds the generator in a `SignalGeneratorRegistry`, generates
 the message, hands it to the transport and returns it. A lookup or generation error propagates and nothing is sent.
 `UnknownEventError` means no generator is registered for the event. Code that already holds a message calls the

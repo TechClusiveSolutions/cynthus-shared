@@ -279,11 +279,13 @@ class TestDefault:
         assert _resolved(registry.generator_for('InventoryShelfCreatedEvent')) is Shelf
         assert _resolved(registry.generator_for('InventoryLocationCreatedEvent')) is Location
 
-    def test_has_the_contracts_of_both_generators(self):
+    def test_has_the_contracts_of_all_the_generators(self):
         registry = SignalGeneratorRegistry.default()
 
-        assert set(registry.contracts()) == set(Shelf.contracts) | set(Location.contracts)
-        assert len(registry) == 6
+        from cynthus.messaging.component.partner.generator import PartnerSignalGenerator
+
+        assert set(registry.contracts()) == set(Shelf.contracts) | set(Location.contracts) | set(PartnerSignalGenerator.contracts)
+        assert len(registry) == 8
 
     def test_signals_and_reverse_lookup(self):
         registry = SignalGeneratorRegistry.default()
@@ -384,3 +386,46 @@ class TestContainer:
     def test_event_name_for_a_non_signal(self):
         with pytest.raises(UnknownEventError):
             SignalGeneratorRegistry([Shelf]).event_name_for([])
+
+
+class TestSignalEvents:
+    """The lookups take a ``SignalEvent`` as well as an ``Event`` (the partner generator is in the default registry)."""
+
+    @staticmethod
+    def _signal_event(event_class, data):
+        from uuid import uuid4
+
+        from cynthus.core.event import EventAction
+
+        return event_class(
+            tenant_id=uuid4(), workspace_id=uuid4(), actor_id=uuid4(), action=EventAction.RETRIEVED, data=data,
+        )
+
+    def test_default_registry_finds_the_partner_contracts_by_event(self):
+        from cynthus.core.event import PartnerServiceListRequestedEvent, PartnerServiceListRespondedEvent
+
+        registry = SignalGeneratorRegistry.default()
+        requested = self._signal_event(PartnerServiceListRequestedEvent, {})
+        responded = self._signal_event(PartnerServiceListRespondedEvent, {'status': 200})
+
+        assert registry.contract_for(requested).event == 'PartnerServiceListRequestedEvent'
+        assert registry.contract_for(responded).event == 'PartnerServiceListRespondedEvent'
+        assert registry.signal_for(requested).name == 'public.partner.service_list.requested'
+        assert registry.signal_for(responded).name == 'public.partner.service_list.responded'
+        assert _resolved(registry.generator_for(requested)).__name__ == 'PartnerSignalGenerator'
+
+    def test_default_registry_still_holds_the_inventory_generators(self):
+        registry = SignalGeneratorRegistry.default()
+
+        assert _resolved(registry.generator_for('InventoryShelfCreatedEvent')) is Shelf
+        assert _resolved(registry.generator_for('InventoryLocationCreatedEvent')) is Location
+
+    def test_unknown_signal_event_raises_unknown_event_error(self):
+        from cynthus.core.event import PartnerEvent
+
+        event = self._signal_event(PartnerEvent, {})
+        registry = SignalGeneratorRegistry([Shelf])
+
+        for lookup in (registry.generator_for, registry.signal_for, registry.contract_for):
+            with pytest.raises(UnknownEventError):
+                lookup(event)

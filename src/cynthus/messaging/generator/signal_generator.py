@@ -6,7 +6,7 @@ import re
 from abc import ABC
 from typing import Any, ClassVar
 
-from ...core.event import Event, SystemEvent, UserEvent
+from ...core.event import Event, SignalEvent, SystemEvent, UserEvent
 from ..common.signal.lifecycle_action import LifecycleAction
 from ..common.signal.message_base import SignalMessageBase
 from ..common.signal.payload import SignalPayload
@@ -74,7 +74,7 @@ class SignalGenerator(ABC):
             events.add(contract.event)
             signals.add(contract.signal.name)
 
-    def generate(self, event: Event) -> SignalMessageBase:
+    def generate(self, event: Event | SignalEvent) -> SignalMessageBase:
         """The signal message for ``event``; ``UnknownEventError`` when no contract matches its class name"""
 
         name = type(event).__name__
@@ -94,12 +94,25 @@ class SignalGenerator(ABC):
 
         raise LookupError(f'{type(self).__name__} has no contract for the method {method}')
 
-    def envelope(self, event: Event, contract: SignalContract) -> dict[str, Any]:
-        """The envelope fields of the message: who, what, when and where; ``ValueError`` when the event has no actor"""
+    def envelope(self, event: Event | SignalEvent, contract: SignalContract) -> dict[str, Any]:
+        """
+            The envelope fields of the message: who, what, when and where
 
-        if isinstance(event, UserEvent):
+            A ``SignalEvent`` carries the ids itself. For an ``Event`` the ids come from its tenant, workspace and
+            user or system; ``ValueError`` when it has neither a user nor a system.
+        """
+
+        if isinstance(event, SignalEvent):
+            tenant_id = event.tenant_id
+            workspace_id = event.workspace_id
+            actor_id = event.actor_id
+        elif isinstance(event, UserEvent):
+            tenant_id = event.tenant.id_
+            workspace_id = event.workspace.id_
             actor_id = event.user.id_
         elif isinstance(event, SystemEvent):
+            tenant_id = event.tenant.id_
+            workspace_id = event.workspace.id_
             actor_id = event.system.id_
         else:
             raise ValueError(f'The event {type(event).__name__} has neither a user nor a system as actor')
@@ -107,8 +120,8 @@ class SignalGenerator(ABC):
         return {
             'event_id': event.id_,
             'timestamp': event.occurred_on,
-            'tenant_id': event.tenant.id_,
-            'workspace_id': event.workspace.id_,
+            'tenant_id': tenant_id,
+            'workspace_id': workspace_id,
             'correlation_id': event.correlation_id,
             'actor_id': actor_id,
             'event_type': contract.signal.name,
