@@ -8,6 +8,8 @@ from cynthus.messaging.common.signal.action_type import SignalActionType
 
 MEMBERS = [
     ('ACCEPTED', 'accepted'),
+    ('APPROVED', 'approved'),
+    ('APPROVED_CONDITIONALLY', 'approved_conditionally'),
     ('ADDED', 'added'),
     ('ASSOCIATED', 'associated'),
     ('AUTHENTICATED', 'authenticated'),
@@ -18,6 +20,7 @@ MEMBERS = [
     ('CREATED', 'created'),
     ('DELETED', 'deleted'),
     ('DENIED', 'denied'),
+    ('DENIED_CONDITIONALLY', 'denied_conditionally'),
     ('GENERATED', 'generated'),
     ('GRANTED', 'granted'),
     ('INITIATED', 'initiated'),

@@ -8,6 +8,7 @@ class SignalDomainType(str, Enum):
 
     ANALYSIS: str = 'analysis'
     AUTH: str = 'auth'
+    DECISION: str = 'decision'
     IDENTITY: str = 'identity'
     INTELLIGENCE: str = 'intelligence'
     INVENTORY: str = 'inventory'

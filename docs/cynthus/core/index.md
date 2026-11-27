@@ -22,7 +22,7 @@ The classes that describe the things in Cynthus: who a user is, what a tenant an
 - `cynthus.core.system`: `System` (fixed identity and the version), `Tenant`, `TenantType`, `Workspace`, `BillingAccount`
 - `cynthus.core.service`: `Service`, `ServiceDomain`, and one identity per service: `InventoryService`, `ProfileService`, `ShoppingService`, `LogisticsService`, `RecipeService`
 - `cynthus.core.resource`: `Resource`, `WorkspaceResource`, `Item`, `Place`, `Engagement`, `Attendee`, `StorageLocation`, `StorageShelf`, `ShelfFillOrder` and the join records
-- `cynthus.core.event`: `Event`, `UserEvent`, `SystemEvent`, `SignalEvent` ([guide](event/signal_event.md)), `EventHooks` ([guide](event/event_hooks.md)), `EventRequest`, `EventRequestResponse` and its decision classes
+- `cynthus.core.event`: `Event`, `UserEvent`, `SystemEvent`, `SignalEvent` ([guide](event/signal_event.md)), `EventHooks` ([guide](event/event_hooks.md)), `EventRequest`, `EventRequestResponse` and its decision classes, and the decision events `EventRequestDecisionEvent` (with `deciding`) and its four answer subclasses ([guide](../messaging/component/decision/events.md))
 
 ---
 
