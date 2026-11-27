@@ -7,6 +7,8 @@ class SignalActionType(str, Enum):
     """Standardized signal action mutations"""
 
     ACCEPTED: str = 'accepted'
+    APPROVED: str = 'approved'
+    APPROVED_CONDITIONALLY: str = 'approved_conditionally'
     ADDED: str = 'added'
     ASSOCIATED: str = 'associated'
     AUTHENTICATED: str = 'authenticated'
@@ -17,6 +19,7 @@ class SignalActionType(str, Enum):
     CREATED: str = 'created'
     DELETED: str = 'deleted'
     DENIED: str = 'denied'
+    DENIED_CONDITIONALLY: str = 'denied_conditionally'
     GENERATED: str = 'generated'
     GRANTED: str = 'granted'
     INITIATED: str = 'initiated'

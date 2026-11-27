@@ -38,6 +38,12 @@ Extended action vocabulary for the `action` component of a signal name. The four
 - `ACCEPTED`
   - String: `"accepted"`
   - Used by: `meal.suggestion.accepted`
+- `APPROVED`
+  - String: `"approved"`
+  - Used by: `decision.event_request.approved`
+- `APPROVED_CONDITIONALLY`
+  - String: `"approved_conditionally"`
+  - Used by: `decision.event_request.approved_conditionally`
 - `ASSOCIATED`
   - String: `"associated"`
   - Used by: `meal.recipes.associated`
@@ -53,6 +59,12 @@ Extended action vocabulary for the `action` component of a signal name. The four
 - `DELETED`
   - String: `"deleted"`
   - Used by: `meal.plan.deleted`, `meal.tag.deleted`, `meal.rating.deleted`
+- `DENIED`
+  - String: `"denied"`
+  - Used by: `decision.event_request.denied`
+- `DENIED_CONDITIONALLY`
+  - String: `"denied_conditionally"`
+  - Used by: `decision.event_request.denied_conditionally`
 - `GENERATED`
   - String: `"generated"`
   - Used by: `meal.suggestion.generated`
@@ -80,6 +92,9 @@ Extended action vocabulary for the `action` component of a signal name. The four
 
 The `domain` component of a signal name, typed as a `str` enum.
 
+- `DECISION`
+  - String: `"decision"`
+  - Description: The decisions made on event requests (ADR-013).
 - `MEAL`
   - String: `"meal"`
   - Description: All meal planning, suggestion, voting, and rating signals.

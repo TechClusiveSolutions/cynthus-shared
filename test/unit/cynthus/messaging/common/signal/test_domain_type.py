@@ -9,6 +9,7 @@ from cynthus.messaging.common.signal.domain_type import SignalDomainType
 MEMBERS = [
     ('ANALYSIS', 'analysis'),
     ('AUTH', 'auth'),
+    ('DECISION', 'decision'),
     ('IDENTITY', 'identity'),
     ('INTELLIGENCE', 'intelligence'),
     ('INVENTORY', 'inventory'),

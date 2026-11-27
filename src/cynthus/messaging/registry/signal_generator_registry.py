@@ -133,7 +133,15 @@ class SignalGeneratorRegistry:
     def default(cls) -> SignalGeneratorRegistry:
         """A new registry holding the built-in generators"""
 
+        from ..component.decision.generator import DecisionSignalGenerator
         from ..component.inventory.generator import InventoryLocationSignalGenerator, InventoryShelfSignalGenerator
         from ..component.partner.generator import PartnerSignalGenerator
 
-        return cls([InventoryLocationSignalGenerator, InventoryShelfSignalGenerator, PartnerSignalGenerator])
+        return cls(
+            [
+                DecisionSignalGenerator,
+                InventoryLocationSignalGenerator,
+                InventoryShelfSignalGenerator,
+                PartnerSignalGenerator,
+            ]
+        )

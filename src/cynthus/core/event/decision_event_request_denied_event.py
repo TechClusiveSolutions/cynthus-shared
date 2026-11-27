@@ -1,0 +1,9 @@
+"""Event Request Denied Event class for the Cynthus project"""
+
+from __future__ import annotations
+
+from .event_request_decision_event import EventRequestDecisionEvent
+
+
+class DecisionEventRequestDeniedEvent(EventRequestDecisionEvent):
+    """Represents the decision that an event request is denied"""

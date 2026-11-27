@@ -282,10 +282,16 @@ class TestDefault:
     def test_has_the_contracts_of_all_the_generators(self):
         registry = SignalGeneratorRegistry.default()
 
+        from cynthus.messaging.component.decision.generator import DecisionSignalGenerator
         from cynthus.messaging.component.partner.generator import PartnerSignalGenerator
 
-        assert set(registry.contracts()) == set(Shelf.contracts) | set(Location.contracts) | set(PartnerSignalGenerator.contracts)
-        assert len(registry) == 8
+        expected = (
+            set(Shelf.contracts) | set(Location.contracts)
+            | set(PartnerSignalGenerator.contracts) | set(DecisionSignalGenerator.contracts)
+        )
+
+        assert set(registry.contracts()) == expected
+        assert len(registry) == 12
 
     def test_signals_and_reverse_lookup(self):
         registry = SignalGeneratorRegistry.default()

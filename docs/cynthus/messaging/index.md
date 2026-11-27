@@ -87,6 +87,10 @@ Paths are relative to `docs/cynthus/messaging/`. Each line is a path, then what 
     - `user.md`: identity.user.* signals
     - `token.md`: identity.token.* signals
     - `access.md`: identity.access.* signals
+  - `decision/`
+    - `index.md`: decision domain overview, messages and payload
+    - `events.md`: the decision events and `deciding`
+    - `generator.md`: `DecisionSignalGenerator`
   - `inventory/`
     - `index.md`: inventory domain overview
     - `request.md`: inventory request and response signals
