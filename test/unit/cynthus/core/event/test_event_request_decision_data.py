@@ -97,3 +97,37 @@ def test_unknown_key_is_refused():
 
 def test_extra_is_forbidden_in_the_config():
     assert EventRequestDecisionData.model_config['extra'] == 'forbid'
+
+
+def test_from_decision_builds_the_data_of_a_conditional_decision():
+    from cynthus.core.test.factory.event import EventRequestResponseFactory
+
+    response = EventRequestResponseFactory()
+    decision = response.conditionally_approve('approval_required', ['approval_granted'], determined_by=uuid4())
+    decision.conditions[0].expires_at = datetime(2026, 12, 1, tzinfo=timezone.utc)
+    request = response.request
+
+    data = EventRequestDecisionData.from_decision(request, decision)
+
+    assert data.event_request_id == request.id_
+    assert data.in_reply_to == request.in_reply_to
+    assert data.requested_event_type == request.event.event_type
+    assert data.requested_action == request.event.action.value
+    assert data.requestor_id == request.requestor_id
+    assert data.answer == 'approved_conditionally'
+    assert data.answer_reason == 'approval_required'
+    assert data.determined_by == decision.determined_by
+    assert data.determined_on == decision.determined_on
+    assert [c.model_dump() for c in data.conditions] == [
+        {'condition': 'approval_granted', 'status': 'open', 'expires_at': datetime(2026, 12, 1, tzinfo=timezone.utc)}
+    ]
+
+
+def test_from_decision_accepts_a_requestor_that_is_a_bare_id():
+    from cynthus.core.test.factory.event import EventRequestResponseFactory
+
+    response = EventRequestResponseFactory()
+    response.request.requestor = requestor = uuid4()
+    decision = response.deny('forbidden')
+
+    assert EventRequestDecisionData.from_decision(response.request, decision).requestor_id == requestor

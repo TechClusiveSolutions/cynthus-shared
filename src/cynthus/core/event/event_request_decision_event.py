@@ -78,21 +78,7 @@ class EventRequestDecisionEvent(SignalEvent):
 
         # The data is the complete data model in JSON form (ids as text, defaults filled in), exactly what
         # SignalEventReader gives back for the signal of this event, so both events carry equal data
-        data = EventRequestDecisionData(
-            event_request_id=request.id_,
-            in_reply_to=request.in_reply_to,
-            requested_event_type=requested.event_type,
-            requested_action=requested.action.value,
-            requestor_id=requestor_id,
-            answer=decision.answer.value,
-            answer_reason=decision.answer_reason,
-            conditions=[
-                {'condition': c.condition, 'status': c.status.value, 'expires_at': c.expires_at}
-                for c in decision.conditions
-            ],
-            determined_by=decision.determined_by,
-            determined_on=decision.determined_on,
-        ).model_dump(mode='json')
+        data = EventRequestDecisionData.from_decision(request, decision).model_dump(mode='json')
 
         return classes[decision.answer](
             correlation_id=requested.correlation_id,
