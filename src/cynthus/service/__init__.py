@@ -3,6 +3,7 @@ from .body import Body
 from .database import Database
 from .database_target import DatabaseTarget
 from .database_url import DatabaseUrl
+from .decision_policy import DecisionPolicy
 from .fact import Fact
 from .facts import Facts
 from .forbidden import Forbidden
